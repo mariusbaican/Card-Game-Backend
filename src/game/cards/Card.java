@@ -1,39 +1,53 @@
 package game.cards;
 
+import fileio.CardInput;
 import lombok.Data;
+import util.Ability;
 
 import java.util.ArrayList;
 
 
 @Data
 public class Card {
-    protected int mana;
-    protected int health;
-    protected int attackDamage;
-    protected String  description;
-    protected ArrayList<String> color = new ArrayList<>();
-    protected String name;
-    protected boolean isFrozen;
-
-    public Card(int mana, int health, String description, ArrayList color, String name) {
-        this.mana = mana;
-        this.health = health;
-        this.description = description;
-        this.color = color;
-        this.name = name;
-        attackDamage = 0;
-        isFrozen = false;
+    public enum Type {
+        MINION,
+        HERO
     }
 
-    public Card(int mana, int health, int attackDamage, String description, ArrayList color, String name) {
+    protected int mana;
+    protected int health;
+    protected String  description;
+    protected ArrayList<String> colors = new ArrayList<>();
+    protected String name;
+    protected boolean isFrozen;
+    protected Ability ability;
+    protected Type cardType;
+
+    public Card(CardInput cardInput) {
+        this.mana = cardInput.getMana();
+        this.health = cardInput.getHealth();
+        this.description = cardInput.getDescription();
+        this.colors = cardInput.getColors();
+        this.name = cardInput.getName();
+        cardType = null;
+        isFrozen = false;
+        ability = null;
+    }
+
+    public Card(int mana, int health, String description, ArrayList colors, String name) {
         this.mana = mana;
         this.health = health;
-        this.attackDamage = attackDamage;
         this.description = description;
-        this.color = color;
+        this.colors = colors;
         this.name = name;
+        cardType = null;
         isFrozen = false;
+        ability = null;
     }
 
     public Card() {}
+
+    public boolean isFrozen() {
+        return isFrozen;
+    }
 }

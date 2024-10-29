@@ -1,49 +1,29 @@
 package game.board;
 
-import game.cards.Card;
+import fileio.Coordinates;
+import game.cards.MinionCard;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @Data
 public class Board {
-    private static Board board;
-    private ArrayList<ArrayList<Card>> boardArray;
+
+    private static Board board = new Board();
+    private ArrayList<ArrayList<MinionCard>> gameBoard;
 
     private Board() {
-        boardArray = new ArrayList<>(4);
-        for (ArrayList<Card> row : boardArray) {
-            row = new ArrayList<>(5);
+        gameBoard = new ArrayList<>(4);
+        for (int i = 0; i < 4; i++) {
+            gameBoard.add(new ArrayList<>(5));
         }
     }
 
     public static Board getInstance() {
-        if (board == null) {
-            board = new Board();
-        }
         return board;
     }
 
-    public void addCard(int row, Card card) {
-        if (card == null) {
-            throw new IllegalArgumentException("Card cannot be null");
-        }
-        //TODO GET SMARTER
-    }
-
-    public void removeCard(Card card) {
-        if (card == null) {
-            throw new IllegalArgumentException("Card cannot be null");
-        }
-        //TODO GET SMARTER
-    }
-
-    public Card getCard(int row, int column) {
-        return boardArray.get(row).get(column);
-    }
-
-    public ArrayList<Card> getRow(int row) {
-        return boardArray.get(row);
+    public MinionCard getCard(Coordinates coordinates) {
+        return gameBoard.get(coordinates.getX()).get(coordinates.getY());
     }
 }

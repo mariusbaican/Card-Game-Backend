@@ -1,19 +1,32 @@
 package game.player;
 
-import game.cards.Card;
-import game.cards.hero.HeroCard;
+import fileio.CardInput;
+import fileio.DecksInput;
+import game.cards.HeroCard;
+import game.cards.MinionCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Player {
+
+    private ArrayList<Deck> decks = new ArrayList<>();
+    private Deck currentDeck = null;
     private HeroCard heroCard;
-    private ArrayList<Card> cards;
     private int currentMana;
 
+    public void initDecks(DecksInput decksInput) {
+        for (ArrayList<CardInput> deck : decksInput.getDecks()) {
+            Deck tempDeck = new Deck();
+            for (CardInput card : deck) {
+                tempDeck.addCard(new MinionCard(card));
+            }
+            decks.add(tempDeck);
+        }
+    }
+
     public Player() {
-        currentMana = 0;
+        currentMana = 10;
     }
 
     public Player setHeroCard(HeroCard heroCard) {
@@ -21,14 +34,15 @@ public class Player {
         return this;
     }
 
-    public Player setCards(List<Card> cards) {
-        this.cards = new ArrayList<>(cards);
+    public Player addDeck(Deck deck) {
+        this.decks.add(deck);
         return this;
     }
 
-    public Player setCards(Card... cards) {
-        return this.setCards(Arrays.asList(cards));
+    public Player selectDeck(int index) {
+        currentDeck = decks.get(index);
+        return this;
     }
 
-    public void playCard(int row, int column, Card card) {}
+
 }
