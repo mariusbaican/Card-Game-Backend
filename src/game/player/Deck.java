@@ -3,9 +3,11 @@ package game.player;
 import fileio.DecksInput;
 import game.cards.Card;
 import game.cards.MinionCard;
+import lombok.Data;
 
 import java.util.*;
 
+@Data
 public class Deck {
     private ArrayList<MinionCard> cards;
     private ArrayList<MinionCard> hand;

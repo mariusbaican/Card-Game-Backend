@@ -1,7 +1,6 @@
 package game;
 
-import fileio.DecksInput;
-import fileio.StartGameInput;
+import fileio.*;
 import game.board.Board;
 import game.cards.HeroCard;
 import game.player.Player;
@@ -12,8 +11,6 @@ public class Game {
     private static Game game = new Game();
     private Board board = Board.getInstance();
 
-    private RoundHandler roundHandler = RoundHandler.getInstance();
-
     private Player player1 = new Player();
     private Player player2 = new Player();
 
@@ -23,8 +20,19 @@ public class Game {
         return game;
     }
 
-    public void runGame() {
+    public void runGames(Input input) {
+        initPlayer(player1, input.getPlayerOneDecks());
+        initPlayer(player2, input.getPlayerTwoDecks());
 
+        for (GameInput gameInput : input.getGames()) {
+            initGame(gameInput.getStartGame());
+
+            ActionHandler.getInstance().reset();
+            ActionHandler.getInstance().startRound();
+            for (ActionsInput actionsInput : gameInput.getActions()) {
+                ActionHandler.getInstance().run(actionsInput);
+            }
+        }
     }
 
     public void initGame(StartGameInput startGameInput) {
@@ -34,7 +42,7 @@ public class Game {
         player2.selectDeck(startGameInput.getPlayerTwoDeckIdx())
                 .setHeroCard(new HeroCard(startGameInput.getPlayerTwoHero()));
 
-        roundHandler.addPlayers(player1, player2, startGameInput.getStartingPlayer());
+        ActionHandler.getInstance().addPlayers(player1, player2, startGameInput.getStartingPlayer());
     }
 
     public void initPlayer(Player player, DecksInput decksInput) {

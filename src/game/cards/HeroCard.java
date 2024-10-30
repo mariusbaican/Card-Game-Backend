@@ -3,9 +3,9 @@ package game.cards;
 import fileio.CardInput;
 import fileio.Coordinates;
 import game.board.Board;
+import lombok.Data;
 
-import java.util.ArrayList;
-
+@Data
 public class HeroCard extends Card {
 
     public HeroCard(CardInput cardInput) {
@@ -13,13 +13,6 @@ public class HeroCard extends Card {
         cardType = Type.HERO;
 
         initAbilities(cardInput.getName());
-    }
-
-    public HeroCard(int mana, int health, String description, ArrayList colors, String name) {
-        super(mana, health, description, colors, name);
-        cardType = Type.HERO;
-
-        initAbilities(name);
     }
 
     private void initAbilities(String name) {

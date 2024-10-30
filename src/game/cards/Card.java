@@ -14,6 +14,11 @@ public class Card {
         HERO
     }
 
+    public enum PlacementRow {
+        FRONT,
+        BACK
+    }
+
     protected int mana;
     protected int health;
     protected String  description;

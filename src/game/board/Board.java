@@ -1,6 +1,7 @@
 package game.board;
 
 import fileio.Coordinates;
+import game.cards.HeroCard;
 import game.cards.MinionCard;
 import lombok.Data;
 
@@ -25,5 +26,24 @@ public class Board {
 
     public MinionCard getCard(Coordinates coordinates) {
         return gameBoard.get(coordinates.getX()).get(coordinates.getY());
+    }
+
+    public void handleAttack(Coordinates attackerCoordinates, Coordinates attackedCoordinates) {
+
+    }
+
+    public void handleAbility(Coordinates attackerCoordinates, Coordinates attackedCoordinates) {
+
+    }
+
+    public void handleHeroAttack(Coordinates attackerCoordinates, HeroCard heroCard) {
+
+    }
+
+    public void handleHeroAbility(HeroCard heroCard, int affectedRow) {
+        Coordinates targetRow = new Coordinates();
+        targetRow.setX(affectedRow);
+        targetRow.setY(0);
+        heroCard.getAbility().run(targetRow);
     }
 }

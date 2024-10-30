@@ -19,8 +19,6 @@ public class MinionCard extends Card {
     protected int attackDamage;
     protected Type minionType;
 
-    public MinionCard(Coordinates coordinates, Type minionType) {}
-
     public MinionCard(CardInput cardInput) {
         super(cardInput);
         this.attackDamage = cardInput.getAttackDamage();
