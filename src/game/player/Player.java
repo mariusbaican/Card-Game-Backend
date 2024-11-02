@@ -73,6 +73,7 @@ public class Player {
             return;
 
         Board.getInstance().getGameBoard().get(row).add(minionCard);
+        hand.remove(handIndex);
     }
 
     public void attackCard(Coordinates attackerCoordinates, Coordinates attackedCoordinates) {
