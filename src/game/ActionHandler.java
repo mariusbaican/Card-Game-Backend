@@ -1,6 +1,7 @@
 package game;
 
 import fileio.ActionsInput;
+import game.board.Board;
 import game.cards.MinionCard;
 import game.player.Player;
 import lombok.Data;
@@ -38,10 +39,14 @@ public class ActionHandler {
     public ActionHandler addPlayers(Player player1, Player player2, int startingPlayer) {
         if (startingPlayer == 1) {
             currentPlayer = player1;
+            player1.setPlayerIndex(1);
             awaitingPlayer = player2;
+            player2.setPlayerIndex(2);
         } else {
             currentPlayer = player2;
+            player2.setPlayerIndex(1);
             awaitingPlayer = player1;
+            player1.setPlayerIndex(2);
         }
         return this;
     }
@@ -81,8 +86,15 @@ public class ActionHandler {
 
     public void endTurn() {
         turnNumber++;
-        for (MinionCard minionCard : currentPlayer.getPlayedCards())
-            minionCard.setFrozen(false);
+        for (MinionCard minionCard : Board.getInstance().getGameBoard().get(currentPlayer.getFrontRow())) {
+                minionCard.setFrozen(false);
+                minionCard.setHasAttacked(false);
+        }
+
+        for (MinionCard minionCard : Board.getInstance().getGameBoard().get(currentPlayer.getBackRow())) {
+                minionCard.setFrozen(false);
+                minionCard.setHasAttacked(false);
+        }
         swapPlayers();
     }
 

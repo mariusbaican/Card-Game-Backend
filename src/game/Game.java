@@ -25,9 +25,10 @@ public class Game {
         initPlayer(player2, input.getPlayerTwoDecks());
 
         for (GameInput gameInput : input.getGames()) {
+            //Board.getInstance().reset();
+            ActionHandler.getInstance().reset();
             initGame(gameInput.getStartGame());
 
-            ActionHandler.getInstance().reset();
             ActionHandler.getInstance().startRound();
             for (ActionsInput actionsInput : gameInput.getActions()) {
                 ActionHandler.getInstance().run(actionsInput);
@@ -36,10 +37,10 @@ public class Game {
     }
 
     public void initGame(StartGameInput startGameInput) {
-        player1.selectDeck(startGameInput.getPlayerOneDeckIdx())
+        player1.selectDeck(startGameInput.getPlayerOneDeckIdx(), startGameInput.getShuffleSeed())
                         .setHeroCard(new HeroCard(startGameInput.getPlayerOneHero()));
 
-        player2.selectDeck(startGameInput.getPlayerTwoDeckIdx())
+        player2.selectDeck(startGameInput.getPlayerTwoDeckIdx(), startGameInput.getShuffleSeed())
                 .setHeroCard(new HeroCard(startGameInput.getPlayerTwoHero()));
 
         ActionHandler.getInstance().addPlayers(player1, player2, startGameInput.getStartingPlayer());

@@ -26,7 +26,7 @@ public class Deck {
         return this;
     }
 
-    public void shuffleDeck(int shuffleSeed) {
+    public void shuffle(int shuffleSeed) {
         Random rand = new Random(shuffleSeed);
         Collections.shuffle(cards, rand);
     }

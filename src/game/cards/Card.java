@@ -25,6 +25,7 @@ public class Card {
     protected ArrayList<String> colors = new ArrayList<>();
     protected String name;
     protected boolean isFrozen;
+    protected boolean hasAttacked;
     protected Ability ability;
     protected Type cardType;
 
@@ -36,23 +37,13 @@ public class Card {
         this.name = cardInput.getName();
         cardType = null;
         isFrozen = false;
+        hasAttacked = false;
         ability = null;
     }
-
-    public Card(int mana, int health, String description, ArrayList colors, String name) {
-        this.mana = mana;
-        this.health = health;
-        this.description = description;
-        this.colors = colors;
-        this.name = name;
-        cardType = null;
-        isFrozen = false;
-        ability = null;
-    }
-
-    public Card() {}
 
     public boolean isFrozen() {
         return isFrozen;
     }
+
+    public boolean hasAttacked() {return hasAttacked;}
 }

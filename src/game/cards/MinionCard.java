@@ -26,14 +26,6 @@ public class MinionCard extends Card {
         initAbilities(cardInput.getName());
     }
 
-    public MinionCard(int mana, int health, int attackDamage, String description, ArrayList colors, String name) {
-        super(mana, health, description, colors, name);
-        this.attackDamage = attackDamage;
-        cardType = Card.Type.MINION;
-
-        initAbilities(name);
-    }
-
     private void initAbilities (String name) {
         switch (name) {
             case "Sentinel", "Berserker" -> {

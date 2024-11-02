@@ -1,7 +1,6 @@
 package game.board;
 
 import fileio.Coordinates;
-import game.cards.HeroCard;
 import game.cards.MinionCard;
 import lombok.Data;
 
@@ -20,6 +19,13 @@ public class Board {
         }
     }
 
+    public void reset() {
+        for (ArrayList<MinionCard> row : gameBoard)
+            row.clear();
+    }
+
+    //TODO ADD RESET METHOD
+
     public static Board getInstance() {
         return board;
     }
@@ -28,22 +34,10 @@ public class Board {
         return gameBoard.get(coordinates.getX()).get(coordinates.getY());
     }
 
-    public void handleAttack(Coordinates attackerCoordinates, Coordinates attackedCoordinates) {
+    public void removeCard(Coordinates coordinates) {
+        if (gameBoard.get(coordinates.getX()).get(coordinates.getY()) == null)
+            return;
 
-    }
-
-    public void handleAbility(Coordinates attackerCoordinates, Coordinates attackedCoordinates) {
-
-    }
-
-    public void handleHeroAttack(Coordinates attackerCoordinates, HeroCard heroCard) {
-
-    }
-
-    public void handleHeroAbility(HeroCard heroCard, int affectedRow) {
-        Coordinates targetRow = new Coordinates();
-        targetRow.setX(affectedRow);
-        targetRow.setY(0);
-        heroCard.getAbility().run(targetRow);
+        gameBoard.get(coordinates.getX()).remove(coordinates.getY());
     }
 }
