@@ -33,7 +33,7 @@ public class Player {
     }
 
     public Player() {
-        currentMana = 10;
+        currentMana = 0;
         winCount = 0;
         playerIndex = 0;
     }
