@@ -36,6 +36,14 @@ public class Player {
         currentMana = 0;
         winCount = 0;
         playerIndex = 0;
+        hand = new ArrayList<>();
+    }
+
+    public void reset() {
+        currentMana = 0;
+        heroCard = null;
+        currentDeck = null;
+        hand = new ArrayList<>();
     }
 
     public Player setHeroCard(HeroCard heroCard) {
@@ -44,19 +52,25 @@ public class Player {
     }
 
     public Player selectDeck(int index, int shuffleSeed) {
-        currentDeck = decks.get(index);
+        currentDeck = new Deck(decks.get(index));
         currentDeck.shuffle(shuffleSeed);
-        hand = currentDeck.getHand();
         return this;
     }
 
-    public Player takeCard() {
-        currentDeck.takeCard();
-        return this;
+    public void takeCard() {
+        if (currentDeck.getCards().isEmpty())
+            return;
+
+        MinionCard temp = currentDeck.getCards().get(0);
+        hand.add(temp);
+        currentDeck.getCards().remove(0);
     }
 
     public void placeCard(int handIndex) {
         //TODO ADD OUTPUTS
+        if (hand.isEmpty())
+            return;
+
         MinionCard minionCard = hand.get(handIndex);
         if (currentMana < minionCard.getMana())
             return;

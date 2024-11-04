@@ -10,15 +10,13 @@ import java.util.*;
 @Data
 public class Deck {
     private ArrayList<MinionCard> cards;
-    private ArrayList<MinionCard> hand;
 
-    public Deck (List<MinionCard> cards) {
-        this.cards = new ArrayList<>(cards);
-        this.hand = new ArrayList<>();
+    public Deck(Deck deck) {
+        cards = new ArrayList<>(deck.getCards());
     }
 
-    public Deck(MinionCard... cards) {
-        this(Arrays.asList(cards));
+    public Deck() {
+        cards = new ArrayList<>();
     }
 
     public Deck addCard(MinionCard card) {
@@ -30,13 +28,4 @@ public class Deck {
         Random rand = new Random(shuffleSeed);
         Collections.shuffle(cards, rand);
     }
-
-    public void takeCard() {
-        if (cards.isEmpty())
-            return;
-        MinionCard temp = cards.get(0);
-        cards.remove(0);
-        hand.add(temp);
-    }
-
 }

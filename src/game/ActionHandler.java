@@ -22,7 +22,7 @@ public class ActionHandler {
     private ActionHandler() {
         gameCount = 0;
         roundNumber = 0;
-        turnNumber = 0;
+        turnNumber = 1;
     }
 
     public static ActionHandler getInstance() {
@@ -32,31 +32,29 @@ public class ActionHandler {
     public void reset() {
         currentPlayer = null;
         awaitingPlayer = null;
-        roundNumber = 1;
+        turnNumber = 1;
+        roundNumber = 0;
         gameCount++;
     }
 
-    public ActionHandler addPlayers(Player player1, Player player2, int startingPlayer) {
+    public void addPlayers(Player player1, Player player2, int startingPlayer) {
         if (startingPlayer == 1) {
             currentPlayer = player1;
-            player1.setPlayerIndex(1);
             awaitingPlayer = player2;
-            player2.setPlayerIndex(2);
         } else {
             currentPlayer = player2;
-            player2.setPlayerIndex(1);
             awaitingPlayer = player1;
-            player1.setPlayerIndex(2);
         }
-        return this;
+        currentPlayer.setPlayerIndex(1);
+        awaitingPlayer.setPlayerIndex(2);
     }
 
     public void run(ActionsInput actionsInput) {
         switch (actionsInput.getCommand()) {
             case "endPlayerTurn" -> {
-                endTurn();
                 if (turnNumber % 2 == 0)
                     startRound();
+                endTurn();
             }
             case "placeCard" ->
                 currentPlayer.placeCard(actionsInput.getHandIdx());
@@ -72,15 +70,19 @@ public class ActionHandler {
 
             case "useHeroAbility" ->
                 currentPlayer.useHeroAbility(actionsInput.getAffectedRow());
+            default -> {
+                return;
+            }
         }
     }
 
     public void startRound() {
         roundNumber++;
-        currentPlayer.setCurrentMana(currentPlayer.getCurrentMana() + Math.min(roundNumber, 10)); //!!!!!Verify mana allocation
+        currentPlayer.setCurrentMana(currentPlayer.getCurrentMana() + Math.min(roundNumber, 10));
         awaitingPlayer.setCurrentMana(awaitingPlayer.getCurrentMana() + Math.min(roundNumber, 10));
         currentPlayer.takeCard();
         awaitingPlayer.takeCard();
+
         isStarted = true;
     }
 

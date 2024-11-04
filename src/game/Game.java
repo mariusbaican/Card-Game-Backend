@@ -9,12 +9,21 @@ import lombok.Data;
 @Data
 public class Game {
     private static Game game = new Game();
-    private Board board = Board.getInstance();
 
     private Player player1 = new Player();
     private Player player2 = new Player();
 
+    private int gameCount = 0;
+
     private Game() {}
+
+    private void resetGame() {
+        player1.reset();
+        player2.reset();
+
+        ActionHandler.getInstance().reset();
+        Board.getInstance().reset();
+    }
 
     public static Game getInstance() {
         return game;
@@ -25,10 +34,8 @@ public class Game {
         initPlayer(player2, input.getPlayerTwoDecks());
 
         for (GameInput gameInput : input.getGames()) {
-            //Board.getInstance().reset();
-            ActionHandler.getInstance().reset();
+            resetGame();
             initGame(gameInput.getStartGame());
-
             ActionHandler.getInstance().startRound();
             for (ActionsInput actionsInput : gameInput.getActions()) {
                 ActionHandler.getInstance().run(actionsInput);
@@ -37,6 +44,7 @@ public class Game {
     }
 
     public void initGame(StartGameInput startGameInput) {
+        gameCount++;
         player1.selectDeck(startGameInput.getPlayerOneDeckIdx(), startGameInput.getShuffleSeed())
                         .setHeroCard(new HeroCard(startGameInput.getPlayerOneHero()));
 

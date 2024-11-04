@@ -19,7 +19,7 @@ import java.util.Objects;
 /**
  * The entry point to this homework. It runs the checker that tests your implentation.
  */
-public final class Main {
+public final class  Main {
     /**
      * for coding style
      */
@@ -35,6 +35,7 @@ public final class Main {
     public static void main(final String[] args) throws IOException {
         File directory = new File(CheckerConstants.TESTS_PATH);
         Path path = Paths.get(CheckerConstants.RESULT_PATH);
+
 
         if (Files.exists(path)) {
             File resultFile = new File(String.valueOf(path));

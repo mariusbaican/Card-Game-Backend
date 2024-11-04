@@ -20,8 +20,10 @@ public class Board {
     }
 
     public void reset() {
-        for (ArrayList<MinionCard> row : gameBoard)
-            row.clear();
+        gameBoard = new ArrayList<>(4);
+        for (int i = 0; i < 4; i++) {
+            gameBoard.add(new ArrayList<>(5));
+        }
     }
 
     //TODO ADD RESET METHOD
@@ -31,7 +33,7 @@ public class Board {
     }
 
     public MinionCard getCard(Coordinates coordinates) {
-        return gameBoard.get(coordinates.getX()).get(coordinates.getY());
+          return gameBoard.get(coordinates.getX()).get(coordinates.getY());
     }
 
     public void removeCard(Coordinates coordinates) {
