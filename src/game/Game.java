@@ -38,6 +38,8 @@ public class Game {
             initGame(gameInput.getStartGame());
             ActionHandler.getInstance().startRound();
             for (ActionsInput actionsInput : gameInput.getActions()) {
+                System.out.println("Round: " + ActionHandler.getInstance().getRoundNumber() + " Turn: " + ActionHandler.getInstance().getTurnNumber() + " Player: " + ActionHandler.getInstance().getCurrentPlayer().getPlayerIndex());
+                System.out.println(actionsInput.getCommand());
                 ActionHandler.getInstance().run(actionsInput);
             }
         }
@@ -46,7 +48,7 @@ public class Game {
     public void initGame(StartGameInput startGameInput) {
         gameCount++;
         player1.selectDeck(startGameInput.getPlayerOneDeckIdx(), startGameInput.getShuffleSeed())
-                        .setHeroCard(new HeroCard(startGameInput.getPlayerOneHero()));
+                .setHeroCard(new HeroCard(startGameInput.getPlayerOneHero()));
 
         player2.selectDeck(startGameInput.getPlayerTwoDeckIdx(), startGameInput.getShuffleSeed())
                 .setHeroCard(new HeroCard(startGameInput.getPlayerTwoHero()));

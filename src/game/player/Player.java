@@ -14,7 +14,7 @@ import java.util.ArrayList;
 @Data
 public class Player {
 
-    private ArrayList<Deck> decks = new ArrayList<>();
+    private ArrayList<Deck> decks;
     private Deck currentDeck = null;
     private ArrayList<MinionCard> hand;
     private HeroCard heroCard;
@@ -23,6 +23,7 @@ public class Player {
     private int playerIndex;
 
     public void initDecks(DecksInput decksInput) {
+        decks = new ArrayList<>();
         for (ArrayList<CardInput> deck : decksInput.getDecks()) {
             Deck tempDeck = new Deck();
             for (CardInput card : deck) {
@@ -54,6 +55,11 @@ public class Player {
     public Player selectDeck(int index, int shuffleSeed) {
         currentDeck = new Deck(decks.get(index));
         currentDeck.shuffle(shuffleSeed);
+        int idx = 0;
+        for (MinionCard card : currentDeck.getCards()) {
+            System.out.println("Card " + idx + ", Mana: " + card.getMana());
+            idx++;
+        }
         return this;
     }
 
@@ -72,8 +78,12 @@ public class Player {
             return;
 
         MinionCard minionCard = hand.get(handIndex);
-        if (currentMana < minionCard.getMana())
+
+        if (currentMana < minionCard.getMana()) {
+            System.out.println("mana: " + currentMana);
+            System.out.println("card mana: " + minionCard.getMana());
             return;
+        }
 
         int row = 0;
         switch (minionCard.getMinionType()) {
@@ -83,16 +93,21 @@ public class Player {
                 row = getFrontRow();
         }
 
-        if (Board.getInstance().getGameBoard().get(row).size() == 5)
+        if (Board.getInstance().getGameBoard().get(row).size() >= 5)
             return;
 
+        System.out.println("New card at row :" + row + " column: " + Board.getInstance().getGameBoard().get(row).size());
         Board.getInstance().getGameBoard().get(row).add(minionCard);
         hand.remove(handIndex);
+        currentMana -= minionCard.getMana();
     }
 
     public void attackCard(Coordinates attackerCoordinates, Coordinates attackedCoordinates) {
         MinionCard attackerCard = Board.getInstance().getCard(attackerCoordinates);
         MinionCard attackedCard = Board.getInstance().getCard(attackedCoordinates);
+
+        System.out.println("Attacker row: " + attackerCoordinates.getX() + " column: " + attackerCoordinates.getY());
+        System.out.println("Attacked row: " + attackedCoordinates.getX() + " column: " + attackedCoordinates.getY());
 
         if (attackedCoordinates.getX() == getFrontRow() || attackedCoordinates.getX() == getBackRow())
             return; //TODO ADD OUTPUT

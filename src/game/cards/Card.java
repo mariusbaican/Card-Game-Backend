@@ -41,6 +41,8 @@ public class Card {
         ability = null;
     }
 
+    public Card() {}
+
     public boolean isFrozen() {
         return isFrozen;
     }

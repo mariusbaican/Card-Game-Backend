@@ -48,6 +48,7 @@ public final class  Main {
 
         for (File file : Objects.requireNonNull(directory.listFiles())) {
             String filepath = CheckerConstants.OUT_PATH + file.getName();
+            System.out.println(filepath);
             File out = new File(filepath);
             boolean isCreated = out.createNewFile();
             if (isCreated) {

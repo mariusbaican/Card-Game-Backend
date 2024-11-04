@@ -1,7 +1,5 @@
 package game.player;
 
-import fileio.DecksInput;
-import game.cards.Card;
 import game.cards.MinionCard;
 import lombok.Data;
 
@@ -12,7 +10,10 @@ public class Deck {
     private ArrayList<MinionCard> cards;
 
     public Deck(Deck deck) {
-        cards = new ArrayList<>(deck.getCards());
+        cards = new ArrayList<>();
+        for (MinionCard card : deck.getCards()) {
+            cards.add(new MinionCard(card));
+        }
     }
 
     public Deck() {

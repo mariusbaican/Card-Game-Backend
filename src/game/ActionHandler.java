@@ -17,7 +17,6 @@ public class ActionHandler {
     private int roundNumber;
     private int turnNumber;
     private int gameCount;
-    private boolean isStarted = false;
 
     private ActionHandler() {
         gameCount = 0;
@@ -82,8 +81,6 @@ public class ActionHandler {
         awaitingPlayer.setCurrentMana(awaitingPlayer.getCurrentMana() + Math.min(roundNumber, 10));
         currentPlayer.takeCard();
         awaitingPlayer.takeCard();
-
-        isStarted = true;
     }
 
     public void endTurn() {
