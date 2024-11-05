@@ -1,1 +1,13 @@
-[ ]
+[ [ {
+  "command" : "placeCard",
+  "handIdx" : 0,
+  "error" : "Not enough mana to place card on table."
+} ], [ {
+  "command" : "placeCard",
+  "handIdx" : 0,
+  "error" : "Not enough mana to place card on table."
+} ], [ {
+  "command" : "placeCard",
+  "handIdx" : 0,
+  "error" : "Not enough mana to place card on table."
+} ] ]

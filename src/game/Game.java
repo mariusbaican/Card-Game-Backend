@@ -1,5 +1,6 @@
 package game;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.*;
 import game.board.Board;
 import game.cards.HeroCard;
@@ -10,8 +11,8 @@ import lombok.Data;
 public class Game {
     private static Game game = new Game();
 
-    private Player player1 = new Player();
-    private Player player2 = new Player();
+    private Player player1 = new Player(1);
+    private Player player2 = new Player(2);
 
     private int gameCount = 0;
 
@@ -29,7 +30,7 @@ public class Game {
         return game;
     }
 
-    public void runGames(Input input) {
+    public void runGames(Input input, ArrayNode output) {
         initPlayer(player1, input.getPlayerOneDecks());
         initPlayer(player2, input.getPlayerTwoDecks());
 
@@ -40,7 +41,7 @@ public class Game {
             for (ActionsInput actionsInput : gameInput.getActions()) {
                 System.out.println("Round: " + ActionHandler.getInstance().getRoundNumber() + " Turn: " + ActionHandler.getInstance().getTurnNumber() + " Player: " + ActionHandler.getInstance().getCurrentPlayer().getPlayerIndex());
                 System.out.println(actionsInput.getCommand());
-                ActionHandler.getInstance().run(actionsInput);
+                ActionHandler.getInstance().run(actionsInput, output);
             }
         }
     }

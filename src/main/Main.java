@@ -72,7 +72,7 @@ public final class  Main {
 
         ArrayNode output = objectMapper.createArrayNode();
 
-        Game.getInstance().runGames(inputData);
+        Game.getInstance().runGames(inputData, output);
 
         /*
          * TODO Implement your function here

@@ -1,5 +1,6 @@
 package game;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
 import game.board.Board;
 import game.cards.MinionCard;
@@ -44,11 +45,9 @@ public class ActionHandler {
             currentPlayer = player2;
             awaitingPlayer = player1;
         }
-        currentPlayer.setPlayerIndex(1);
-        awaitingPlayer.setPlayerIndex(2);
     }
 
-    public void run(ActionsInput actionsInput) {
+    public void run(ActionsInput actionsInput, ArrayNode output) {
         switch (actionsInput.getCommand()) {
             case "endPlayerTurn" -> {
                 if (turnNumber % 2 == 0)
@@ -56,10 +55,10 @@ public class ActionHandler {
                 endTurn();
             }
             case "placeCard" ->
-                currentPlayer.placeCard(actionsInput.getHandIdx());
+                currentPlayer.placeCard(actionsInput.getHandIdx(), output);
 
             case "cardUsesAttack" ->
-                currentPlayer.attackCard(actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
+                currentPlayer.attackCard(actionsInput.getCardAttacker(), actionsInput.getCardAttacked(), output);
 
             case "cardUsesAbility" ->
                 currentPlayer.useAbility(actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
@@ -69,6 +68,39 @@ public class ActionHandler {
 
             case "useHeroAbility" ->
                 currentPlayer.useHeroAbility(actionsInput.getAffectedRow());
+            case "getCardsInHand" -> {
+                return;
+            }
+            case "getPlayerDeck" -> {
+                return;
+            }
+            case "getCardsOnTable" -> {
+                return;
+            }
+            case "getPlayerTurn" -> {
+                return;
+            }
+            case "getPlayerHero" -> {
+                return;
+            }
+            case "getCardAtPosition" -> {
+                return;
+            }
+            case "getPlayerMana" -> {
+                return;
+            }
+            case "getFrozenCardsOnTable" -> {
+                return;
+            }
+            case "getTotalGamesPlayer" -> {
+                return;
+            }
+            case "getPlayerOneWins" -> {
+                return;
+            }
+            case "getPlayerTwoWins" -> {
+                return;
+            }
             default -> {
                 return;
             }

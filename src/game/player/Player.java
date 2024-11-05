@@ -1,5 +1,8 @@
 package game.player;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 import fileio.Coordinates;
 import fileio.DecksInput;
@@ -9,7 +12,9 @@ import game.cards.MinionCard;
 import lombok.Data;
 
 import java.lang.annotation.Target;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Data
 public class Player {
@@ -33,10 +38,10 @@ public class Player {
         }
     }
 
-    public Player() {
+    public Player(int playerIndex) {
         currentMana = 0;
         winCount = 0;
-        playerIndex = 0;
+        this.playerIndex = playerIndex;
         hand = new ArrayList<>();
     }
 
@@ -72,7 +77,7 @@ public class Player {
         currentDeck.getCards().remove(0);
     }
 
-    public void placeCard(int handIndex) {
+    public void placeCard(int handIndex, ArrayNode output) {
         //TODO ADD OUTPUTS
         if (hand.isEmpty())
             return;
@@ -80,8 +85,17 @@ public class Player {
         MinionCard minionCard = hand.get(handIndex);
 
         if (currentMana < minionCard.getMana()) {
-            System.out.println("mana: " + currentMana);
-            System.out.println("card mana: " + minionCard.getMana());
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            ObjectNode objectNode = objectMapper.createObjectNode();
+            objectNode.put("command", "placeCard");
+            objectNode.put("handIdx", 0);
+            objectNode.put("error", "Not enough mana to place card on table.");
+
+            ArrayNode arrayNode = objectMapper.createArrayNode();
+            arrayNode.add(objectNode);
+
+            output.add(arrayNode);
             return;
         }
 
@@ -93,24 +107,43 @@ public class Player {
                 row = getFrontRow();
         }
 
-        if (Board.getInstance().getGameBoard().get(row).size() >= 5)
-            return;
+        if (Board.getInstance().getGameBoard().get(row).size() >= 5) {
+            ObjectMapper objectMapper = new ObjectMapper();
 
-        System.out.println("New card at row :" + row + " column: " + Board.getInstance().getGameBoard().get(row).size());
+            ObjectNode objectNode = objectMapper.createObjectNode();
+            objectNode.put("command", "placeCard");
+            objectNode.put("handIdx", 0);
+            objectNode.put("error", "Cannot place card on table since row is full.");
+
+            ArrayNode arrayNode = objectMapper.createArrayNode();
+            arrayNode.add(objectNode);
+
+            output.add(arrayNode);
+            return;
+        }
+
         Board.getInstance().getGameBoard().get(row).add(minionCard);
         hand.remove(handIndex);
         currentMana -= minionCard.getMana();
     }
 
-    public void attackCard(Coordinates attackerCoordinates, Coordinates attackedCoordinates) {
+    public void attackCard(Coordinates attackerCoordinates, Coordinates attackedCoordinates, ArrayNode output) {
         MinionCard attackerCard = Board.getInstance().getCard(attackerCoordinates);
         MinionCard attackedCard = Board.getInstance().getCard(attackedCoordinates);
 
-        System.out.println("Attacker row: " + attackerCoordinates.getX() + " column: " + attackerCoordinates.getY());
-        System.out.println("Attacked row: " + attackedCoordinates.getX() + " column: " + attackedCoordinates.getY());
+        if (attackedCoordinates.getX() == getFrontRow() || attackedCoordinates.getX() == getBackRow()) {
+            ObjectMapper objectMapper = new ObjectMapper();
 
-        if (attackedCoordinates.getX() == getFrontRow() || attackedCoordinates.getX() == getBackRow())
-            return; //TODO ADD OUTPUT
+            ObjectNode objectNode = objectMapper.createObjectNode();
+            objectNode.put("command", "cardUsesAttack");
+            objectNode.put("error", "Cannot place card on table since row is full.");
+
+            ArrayNode arrayNode = objectMapper.createArrayNode();
+            arrayNode.add(objectNode);
+
+            output.add(arrayNode);
+            return;
+        }
         if (!validAttacker(attackerCard))
             return;
 
