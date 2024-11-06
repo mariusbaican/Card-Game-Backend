@@ -36,6 +36,7 @@ public class Game {
 
     public void runGames(Input input, ArrayNode output) {
         this.output = output;
+        gameCount = 0;
         initPlayer(player1, input.getPlayerOneDecks());
         initPlayer(player2, input.getPlayerTwoDecks());
 
@@ -62,6 +63,7 @@ public class Game {
 
     public void initPlayer(Player player, DecksInput decksInput) {
         player.initDecks(decksInput);
+        player.setWinCount(0);
     }
 
     public void end() {
@@ -88,7 +90,7 @@ public class Game {
 
         ObjectNode turnOutput = objectMapper.createObjectNode();
         turnOutput.put("command", "getPlayerTurn");
-        turnOutput.put("turn", ActionHandler.getInstance().getCurrentPlayer().getPlayerIndex());
+        turnOutput.put("output", ActionHandler.getInstance().getCurrentPlayer().getPlayerIndex());
         output.add(turnOutput);
     }
 

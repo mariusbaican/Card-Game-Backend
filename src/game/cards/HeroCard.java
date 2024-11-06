@@ -1,7 +1,11 @@
 package game.cards;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 import fileio.Coordinates;
+import game.Game;
 import game.board.Board;
 import lombok.Data;
 
@@ -21,6 +25,7 @@ public class HeroCard extends Card {
             case "Lord Royce" -> this.setAbility((Coordinates coordinates) -> {
                 for (MinionCard minionCard : Board.getInstance().getGameBoard().get(coordinates.getX()))
                     minionCard.setFrozen(true);
+                System.out.println("Lord Royce");
             });
             case "Empress Thorina" -> this.setAbility((Coordinates coordinates) -> {
                 MinionCard healthiestCard = Board.getInstance().getGameBoard().get(coordinates.getX()).get(0);
@@ -28,16 +33,35 @@ public class HeroCard extends Card {
                     if (minionCard.getHealth() > healthiestCard.getHealth())
                         healthiestCard = minionCard;
                 healthiestCard.setHealth(0);
+                System.out.println("Empress Thorina");
             });
             case "King Mudface" -> this.setAbility((Coordinates coordinates) -> {
                 for (MinionCard minionCard : Board.getInstance().getGameBoard().get(coordinates.getX()))
                     minionCard.setHealth(minionCard.getHealth() + 1);
+                System.out.println("King Mudface");
             });
             case "General Kocioraw" -> this.setAbility((Coordinates coordinates) -> {
                 for (MinionCard minionCard : Board.getInstance().getGameBoard().get(coordinates.getX()))
                     minionCard.setAttackDamage(minionCard.getAttackDamage() + 1);
+                System.out.println("General Kocioraw");
             });
-            default -> System.out.println("Invalid Hero name");
+            default ->
+                    throw new IllegalStateException("Illegal Hero card name: " + name);
         }
+    }
+
+    @Override
+    public ObjectNode outputCard(ObjectMapper objectMapper) {
+        ObjectNode heroCardStats = objectMapper.createObjectNode();
+        heroCardStats.put("mana", mana);
+        heroCardStats.put("description", description);
+        ArrayNode colorArray = objectMapper.createArrayNode();
+        for (String color : colors) {
+            colorArray.add(color);
+        }
+        heroCardStats.put("colors", colorArray);
+        heroCardStats.put("name", name);
+        heroCardStats.put("health", health);
+        return heroCardStats;
     }
 }

@@ -42,6 +42,7 @@ public class Player {
         winCount = 0;
         this.playerIndex = playerIndex;
         hand = new ArrayList<>();
+        this.playerName = playerName;
     }
 
     public void reset() {
@@ -85,7 +86,7 @@ public class Player {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode placeCardOutput = objectMapper.createObjectNode();
         placeCardOutput.put("command", "placeCard");
-        placeCardOutput.put("handIdx", 0);
+        placeCardOutput.put("handIdx", handIndex);
 
         if (currentMana < minionCard.getMana()) {
             placeCardOutput.put("error", "Not enough mana to place card on table.");
@@ -133,7 +134,7 @@ public class Player {
         attackCardOutput.put("cardAttacked", attackedCoords);
 
         if (attackedCoordinates.getX() == getFrontRow() || attackedCoordinates.getX() == getBackRow()) {
-            attackCardOutput.put("error", "Cannot place card on table since row is full.");
+            attackCardOutput.put("error", "Attacked card does not belong to the enemy.");
             Game.getInstance().getOutput().add(attackCardOutput);
             return;
         }
@@ -152,7 +153,7 @@ public class Player {
 
         if (attackedCard.getMinionType() != MinionCard.Type.TANK) {
             if (checkForTank()) {
-                attackCardOutput.put("error", "Attacked card is not of type 'Tank’.");
+                attackCardOutput.put("error", "Attacked card is not of type 'Tank'.");
                 Game.getInstance().getOutput().add(attackCardOutput);
                 return;
             }
@@ -210,7 +211,7 @@ public class Player {
                 }
                 if (attackedCard.getMinionType() != MinionCard.Type.TANK)
                     if (checkForTank()) {
-                        useAbilityOutput.put("error", "Attacked card is not of type 'Tank’.");
+                        useAbilityOutput.put("error", "Attacked card is not of type 'Tank'.");
                         Game.getInstance().getOutput().add(useAbilityOutput);
                         return;
                     }
@@ -232,6 +233,7 @@ public class Player {
         ObjectNode attackerCoords = objectMapper.createObjectNode();
         attackerCoords.put("x", attackerCoordinates.getX());
         attackerCoords.put("y", attackerCoordinates.getY());
+        attackHeroOutput.put("cardAttacker", attackerCoords);
 
         if (attackerCard.isFrozen()) {
             attackHeroOutput.put("error", "Attacker card is frozen.");
@@ -245,7 +247,7 @@ public class Player {
         }
 
         if (checkForTank()) {
-            attackHeroOutput.put("error", "Attacked card is not of type 'Tank’.");
+            attackHeroOutput.put("error", "Attacked card is not of type 'Tank'.");
             Game.getInstance().getOutput().add(attackHeroOutput);
             return;
         }
@@ -295,6 +297,7 @@ public class Player {
         attackedRow.setY(0);
         heroCard.getAbility().run(attackedRow);
         heroCard.setHasAttacked(true);
+        currentMana -= heroCard.getMana();
 
         for (int i = 0; i < Board.getInstance().getGameBoard().get(affectedRow).size(); i++)
             if (Board.getInstance().getGameBoard().get(affectedRow).get(i).getHealth() <= 0) {
@@ -309,20 +312,9 @@ public class Player {
         handOutput.put("command", "getCardsInHand");
         handOutput.put("playerIdx", playerIndex);
         ArrayNode handCards = objectMapper.createArrayNode();
-        for (MinionCard minionCard : hand) {
-            ObjectNode currentCard = objectMapper.createObjectNode();
-            currentCard.put("mana", minionCard.getMana());
-            currentCard.put("attackDamage", minionCard.getAttackDamage());
-            currentCard.put("health", minionCard.getHealth());
-            currentCard.put("description", minionCard.getDescription());
-            ArrayNode colors = objectMapper.createArrayNode();
-            for (String color : minionCard.getColors()) {
-                colors.add(color);
-            }
-            currentCard.put("colors", colors);
-            currentCard.put("name", minionCard.getName());
-            handCards.add(currentCard);
-        }
+        for (MinionCard minionCard : hand)
+            handCards.add(minionCard.outputCard(objectMapper));
+
         handOutput.put("output", handCards);
         Game.getInstance().getOutput().add(handOutput);
     }
@@ -333,20 +325,9 @@ public class Player {
         deckOutput.put("command", "getPlayerDeck");
         deckOutput.put("playerIdx", playerIndex);
         ArrayNode deckCards = objectMapper.createArrayNode();
-        for (MinionCard minionCard : hand) {
-            ObjectNode currentCard = objectMapper.createObjectNode();
-            currentCard.put("mana", minionCard.getMana());
-            currentCard.put("attackDamage", minionCard.getAttackDamage());
-            currentCard.put("health", minionCard.getHealth());
-            currentCard.put("description", minionCard.getDescription());
-            ArrayNode colors = objectMapper.createArrayNode();
-            for (String color : minionCard.getColors()) {
-                colors.add(color);
-            }
-            currentCard.put("colors", colors);
-            currentCard.put("name", minionCard.getName());
-            deckCards.add(currentCard);
-        }
+        for (MinionCard minionCard : currentDeck.getCards())
+            deckCards.add(minionCard.outputCard(objectMapper));
+
         deckOutput.put("output", deckCards);
         Game.getInstance().getOutput().add(deckOutput);
     }
@@ -356,17 +337,7 @@ public class Player {
         ObjectNode heroCardOutput = objectMapper.createObjectNode();
         heroCardOutput.put("command", "getPlayerHero");
         heroCardOutput.put("playerIdx", playerIndex);
-        ObjectNode heroCardStats = objectMapper.createObjectNode();
-        heroCardStats.put("mana", heroCard.getMana());
-        heroCardStats.put("description", heroCard.getDescription());
-        ArrayNode colors = objectMapper.createArrayNode();
-        for (String color : heroCard.getColors()) {
-            colors.add(color);
-        }
-        heroCardStats.put("colors", colors);
-        heroCardStats.put("name", heroCard.getName());
-        heroCardStats.put("health", heroCard.getHealth());
-        heroCardOutput.put("output", heroCardStats);
+        heroCardOutput.put("output", heroCard.outputCard(objectMapper));
         Game.getInstance().getOutput().add(heroCardOutput);
     }
 

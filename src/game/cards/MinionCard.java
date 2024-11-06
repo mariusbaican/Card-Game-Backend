@@ -1,11 +1,12 @@
 package game.cards;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 import fileio.Coordinates;
 import game.board.Board;
 import lombok.Data;
-
-import java.util.ArrayList;
 
 @Data
 public class MinionCard extends Card {
@@ -57,6 +58,7 @@ public class MinionCard extends Card {
                     int newHealth = Board.getInstance().getCard(coordinates).getAttackDamage();
                     Board.getInstance().getCard(coordinates).setAttackDamage(newAttackDamage);
                     Board.getInstance().getCard(coordinates).setHealth(newHealth);
+                    System.out.println("The Cursed One");
                 });
             }
             case "Disciple" -> {
@@ -64,6 +66,7 @@ public class MinionCard extends Card {
                 setAbility((Coordinates coordinates) -> {
                     int newHealth = Board.getInstance().getCard(coordinates).getHealth() + 2;
                     Board.getInstance().getCard(coordinates).setHealth(newHealth);
+                    System.out.println("The Disciple");
                 });
             }
             case "The Ripper" -> {
@@ -71,20 +74,37 @@ public class MinionCard extends Card {
                 setAbility((Coordinates coordinates) -> {
                     int newAttackDamage = Math.max(Board.getInstance().getCard(coordinates).getAttackDamage() - 2, 0);
                     Board.getInstance().getCard(coordinates).setAttackDamage(newAttackDamage);
+                    System.out.println("The Ripper");
                 });
             }
             case "Miraj" -> {
                 minionType = Type.LEGENDARY;
                 setAbility((Coordinates coordinates) -> {
                     int newMirajHealth = Board.getInstance().getCard(coordinates).getHealth();
-                    int newOpponentHealth = this.getHealth();
-                    this.setHealth(newMirajHealth);
+                    int newOpponentHealth = getHealth();
+                    setHealth(newMirajHealth);
                     Board.getInstance().getCard(coordinates).setHealth(newOpponentHealth);
+                    System.out.println("The Miraj");
                 });
             }
             default -> System.out.println("Invalid Minion name");
         }
     }
 
+    @Override
+    public ObjectNode outputCard(ObjectMapper objectMapper) {
+        ObjectNode currentCard = objectMapper.createObjectNode();
+        currentCard.put("mana", mana);
+        currentCard.put("attackDamage", attackDamage);
+        currentCard.put("health", health);
+        currentCard.put("description", description);
+        ArrayNode colorArray = objectMapper.createArrayNode();
+        for (String color : colors) {
+            colorArray.add(color);
+        }
+        currentCard.put("colors", colorArray);
+        currentCard.put("name", name);
+        return currentCard;
+    }
 
 }

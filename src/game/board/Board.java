@@ -35,21 +35,13 @@ public class Board {
         ObjectNode boardOutput = objectMapper.createObjectNode();
         boardOutput.put("command", "getCardsOnTable");
         ArrayNode boardCards = objectMapper.createArrayNode();
-        for (ArrayList<MinionCard> cards : gameBoard)
-            for (MinionCard minionCard : cards) {
-                ObjectNode currentCard = objectMapper.createObjectNode();
-                currentCard.put("mana", minionCard.getMana());
-                currentCard.put("attackDamage", minionCard.getAttackDamage());
-                currentCard.put("health", minionCard.getHealth());
-                currentCard.put("description", minionCard.getDescription());
-                ArrayNode colors = objectMapper.createArrayNode();
-                for (String color : minionCard.getColors()) {
-                    colors.add(color);
-                }
-                currentCard.put("colors", colors);
-                currentCard.put("name", minionCard.getName());
-                boardCards.add(currentCard);
-            }
+        for (ArrayList<MinionCard> cards : gameBoard) {
+            ArrayNode rowCards = objectMapper.createArrayNode();
+            for (MinionCard minionCard : cards)
+                rowCards.add(minionCard.outputCard(objectMapper));
+            boardCards.add(rowCards);
+        }
+        boardOutput.put("output", boardCards);
         Game.getInstance().getOutput().add(boardOutput);
     }
 
@@ -62,49 +54,36 @@ public class Board {
             for (MinionCard minionCard : cards) {
                 if (!minionCard.isFrozen())
                     continue;
-                ObjectNode currentCard = objectMapper.createObjectNode();
-                currentCard.put("mana", minionCard.getMana());
-                currentCard.put("attackDamage", minionCard.getAttackDamage());
-                currentCard.put("health", minionCard.getHealth());
-                currentCard.put("description", minionCard.getDescription());
-                ArrayNode colors = objectMapper.createArrayNode();
-                for (String color : minionCard.getColors()) {
-                    colors.add(color);
-                }
-                currentCard.put("colors", colors);
-                currentCard.put("name", minionCard.getName());
-                boardCards.add(currentCard);
+                boardCards.add(minionCard.outputCard(objectMapper));
             }
+        boardOutput.put("output", boardCards);
         Game.getInstance().getOutput().add(boardOutput);
     }
 
     public void getCardAtPosition(int x, int y) {
-        /*Coordinates coordinates = new Coordinates();
+        Coordinates coordinates = new Coordinates();
         coordinates.setX(x);
         coordinates.setY(y);
-
-        MinionCard minionCard = getCard(coordinates);
 
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode cardOutput = objectMapper.createObjectNode();
         cardOutput.put("command", "getCardAtPosition");
+
+        if (gameBoard.get(coordinates.getX()).size() - 1 < y) {
+            cardOutput.put("output", "No card available at that position.");
+            cardOutput.put("x", x);
+            cardOutput.put("y", y);
+            Game.getInstance().getOutput().add(cardOutput);
+            return;
+        }
+
         cardOutput.put("x", x);
         cardOutput.put("y", y);
 
-        ObjectNode cardStats = objectMapper.createObjectNode();
-        cardStats.put("mana", minionCard.getMana());
-        cardStats.put("attackDamage", minionCard.getAttackDamage());
-        cardStats.put("health", minionCard.getHealth());
-        cardStats.put("description", minionCard.getDescription());
-        ArrayNode colors = objectMapper.createArrayNode();
-        for (String color : minionCard.getColors()) {
-            colors.add(color);
-        }
-        cardStats.put("colors", colors);
-        cardStats.put("name", minionCard.getName());
+        MinionCard minionCard = getCard(coordinates);
 
-        cardOutput.put("output", cardStats);
-        Game.getInstance().getOutput().add(cardOutput);*/
+        cardOutput.put("output", minionCard.outputCard(objectMapper));
+        Game.getInstance().getOutput().add(cardOutput);
     }
 
     public static Board getInstance() {
