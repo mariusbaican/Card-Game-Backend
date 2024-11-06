@@ -47,7 +47,7 @@ public class ActionHandler {
         }
     }
 
-    public void run(ActionsInput actionsInput, ArrayNode output) {
+    public void run(ActionsInput actionsInput) {
         switch (actionsInput.getCommand()) {
             case "endPlayerTurn" -> {
                 if (turnNumber % 2 == 0)
@@ -55,10 +55,10 @@ public class ActionHandler {
                 endTurn();
             }
             case "placeCard" ->
-                currentPlayer.placeCard(actionsInput.getHandIdx(), output);
+                currentPlayer.placeCard(actionsInput.getHandIdx());
 
             case "cardUsesAttack" ->
-                currentPlayer.attackCard(actionsInput.getCardAttacker(), actionsInput.getCardAttacked(), output);
+                currentPlayer.attackCard(actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
 
             case "cardUsesAbility" ->
                 currentPlayer.useAbility(actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
@@ -68,42 +68,30 @@ public class ActionHandler {
 
             case "useHeroAbility" ->
                 currentPlayer.useHeroAbility(actionsInput.getAffectedRow());
-            case "getCardsInHand" -> {
-                return;
-            }
-            case "getPlayerDeck" -> {
-                return;
-            }
-            case "getCardsOnTable" -> {
-                return;
-            }
-            case "getPlayerTurn" -> {
-                return;
-            }
-            case "getPlayerHero" -> {
-                return;
-            }
-            case "getCardAtPosition" -> {
-                return;
-            }
-            case "getPlayerMana" -> {
-                return;
-            }
-            case "getFrozenCardsOnTable" -> {
-                return;
-            }
-            case "getTotalGamesPlayer" -> {
-                return;
-            }
-            case "getPlayerOneWins" -> {
-                return;
-            }
-            case "getPlayerTwoWins" -> {
-                return;
-            }
-            default -> {
-                return;
-            }
+            case "getCardsInHand" ->
+                Game.getInstance().getPlayer(actionsInput.getPlayerIdx()).getCardsInHand();
+            case "getPlayerDeck" ->
+                Game.getInstance().getPlayer(actionsInput.getPlayerIdx()).getPlayerDeck();
+            case "getCardsOnTable" ->
+                Board.getInstance().getCardsOnTable();
+            case "getPlayerTurn" ->
+                Game.getInstance().getPlayerTurn();
+            case "getPlayerHero" ->
+                Game.getInstance().getPlayer(actionsInput.getPlayerIdx()).getPlayerHero();
+            case "getCardAtPosition" ->
+                Board.getInstance().getCardAtPosition(actionsInput.getX(), actionsInput.getY());
+            case "getPlayerMana" ->
+                Game.getInstance().getPlayer(actionsInput.getPlayerIdx()).getPlayerMana();
+            case "getFrozenCardsOnTable" ->
+                Board.getInstance().getFrozenCardsOnTable();
+            case "getTotalGamesPlayed" ->
+                Game.getInstance().getTotalGamesPlayed();
+            case "getPlayerOneWins" ->
+                Game.getInstance().getPlayer(1).getPlayerWins();
+            case "getPlayerTwoWins" ->
+                Game.getInstance().getPlayer(2).getPlayerWins();
+            default ->
+                throw new RuntimeException("Unknown command");
         }
     }
 

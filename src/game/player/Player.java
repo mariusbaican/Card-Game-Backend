@@ -6,15 +6,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 import fileio.Coordinates;
 import fileio.DecksInput;
+import game.Game;
 import game.board.Board;
 import game.cards.HeroCard;
 import game.cards.MinionCard;
 import lombok.Data;
 
-import java.lang.annotation.Target;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Objects;
 
 @Data
 public class Player {
@@ -26,6 +24,7 @@ public class Player {
     private int currentMana;
     private int winCount;
     private int playerIndex;
+    private String playerName;
 
     public void initDecks(DecksInput decksInput) {
         decks = new ArrayList<>();
@@ -38,7 +37,7 @@ public class Player {
         }
     }
 
-    public Player(int playerIndex) {
+    public Player(int playerIndex, String playerName) {
         currentMana = 0;
         winCount = 0;
         this.playerIndex = playerIndex;
@@ -62,7 +61,6 @@ public class Player {
         currentDeck.shuffle(shuffleSeed);
         int idx = 0;
         for (MinionCard card : currentDeck.getCards()) {
-            System.out.println("Card " + idx + ", Mana: " + card.getMana());
             idx++;
         }
         return this;
@@ -77,25 +75,22 @@ public class Player {
         currentDeck.getCards().remove(0);
     }
 
-    public void placeCard(int handIndex, ArrayNode output) {
+    public void placeCard(int handIndex) {
         //TODO ADD OUTPUTS
         if (hand.isEmpty())
             return;
 
         MinionCard minionCard = hand.get(handIndex);
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode placeCardOutput = objectMapper.createObjectNode();
+        placeCardOutput.put("command", "placeCard");
+        placeCardOutput.put("handIdx", 0);
+
         if (currentMana < minionCard.getMana()) {
-            ObjectMapper objectMapper = new ObjectMapper();
+            placeCardOutput.put("error", "Not enough mana to place card on table.");
 
-            ObjectNode objectNode = objectMapper.createObjectNode();
-            objectNode.put("command", "placeCard");
-            objectNode.put("handIdx", 0);
-            objectNode.put("error", "Not enough mana to place card on table.");
-
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            arrayNode.add(objectNode);
-
-            output.add(arrayNode);
+            Game.getInstance().getOutput().add(placeCardOutput);
             return;
         }
 
@@ -108,17 +103,8 @@ public class Player {
         }
 
         if (Board.getInstance().getGameBoard().get(row).size() >= 5) {
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            ObjectNode objectNode = objectMapper.createObjectNode();
-            objectNode.put("command", "placeCard");
-            objectNode.put("handIdx", 0);
-            objectNode.put("error", "Cannot place card on table since row is full.");
-
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            arrayNode.add(objectNode);
-
-            output.add(arrayNode);
+            placeCardOutput.put("error", "Cannot place card on table since row is full.");
+            Game.getInstance().getOutput().add(placeCardOutput);
             return;
         }
 
@@ -127,29 +113,49 @@ public class Player {
         currentMana -= minionCard.getMana();
     }
 
-    public void attackCard(Coordinates attackerCoordinates, Coordinates attackedCoordinates, ArrayNode output) {
+    public void attackCard(Coordinates attackerCoordinates, Coordinates attackedCoordinates) {
         MinionCard attackerCard = Board.getInstance().getCard(attackerCoordinates);
         MinionCard attackedCard = Board.getInstance().getCard(attackedCoordinates);
 
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ObjectNode attackCardOutput = objectMapper.createObjectNode();
+        attackCardOutput.put("command", "cardUsesAttack");
+
+        ObjectNode attackerCoords = objectMapper.createObjectNode();
+        attackerCoords.put("x", attackerCoordinates.getX());
+        attackerCoords.put("y", attackerCoordinates.getY());
+        attackCardOutput.put("cardAttacker", attackerCoords);
+
+        ObjectNode attackedCoords = objectMapper.createObjectNode();
+        attackedCoords.put("x", attackedCoordinates.getX());
+        attackedCoords.put("y", attackedCoordinates.getY());
+        attackCardOutput.put("cardAttacked", attackedCoords);
+
         if (attackedCoordinates.getX() == getFrontRow() || attackedCoordinates.getX() == getBackRow()) {
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            ObjectNode objectNode = objectMapper.createObjectNode();
-            objectNode.put("command", "cardUsesAttack");
-            objectNode.put("error", "Cannot place card on table since row is full.");
-
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            arrayNode.add(objectNode);
-
-            output.add(arrayNode);
+            attackCardOutput.put("error", "Cannot place card on table since row is full.");
+            Game.getInstance().getOutput().add(attackCardOutput);
             return;
         }
-        if (!validAttacker(attackerCard))
+
+        if (attackerCard.isFrozen()) {
+            attackCardOutput.put("error", "Attacker card is frozen.");
+            Game.getInstance().getOutput().add(attackCardOutput);
             return;
+        }
+        if (attackerCard.hasAttacked()) {
+            attackCardOutput.put("error", "Attacker card has already attacked this turn.");
+            Game.getInstance().getOutput().add(attackCardOutput);
+            return;
+        }
+
 
         if (attackedCard.getMinionType() != MinionCard.Type.TANK) {
-            if (checkForTank())
-                return; //TODO ADD OUTPUT
+            if (checkForTank()) {
+                attackCardOutput.put("error", "Attacked card is not of type 'Tank’.");
+                Game.getInstance().getOutput().add(attackCardOutput);
+                return;
+            }
         }
 
         attackedCard.setHealth(attackedCard.getHealth() - attackerCard.getAttackDamage());
@@ -162,20 +168,52 @@ public class Player {
         MinionCard attackerCard = Board.getInstance().getCard(attackerCoordinates);
         MinionCard attackedCard = Board.getInstance().getCard(attackedCoordinates);
 
-        if (!validAttacker(attackerCard))
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ObjectNode useAbilityOutput = objectMapper.createObjectNode();
+        useAbilityOutput.put("command", "cardUsesAbility");
+
+        ObjectNode attackerCoords = objectMapper.createObjectNode();
+        attackerCoords.put("x", attackerCoordinates.getX());
+        attackerCoords.put("y", attackerCoordinates.getY());
+        useAbilityOutput.put("cardAttacker", attackerCoords);
+
+        ObjectNode attackedCoords = objectMapper.createObjectNode();
+        attackedCoords.put("x", attackedCoordinates.getX());
+        attackedCoords.put("y", attackedCoordinates.getY());
+        useAbilityOutput.put("cardAttacked", attackedCoords);
+
+        if (attackerCard.isFrozen()) {
+            useAbilityOutput.put("error", "Attacker card is frozen.");
+            Game.getInstance().getOutput().add(useAbilityOutput);
             return;
+        }
+        if (attackerCard.hasAttacked()) {
+            useAbilityOutput.put("error", "Attacker card has already attacked this turn.");
+            Game.getInstance().getOutput().add(useAbilityOutput);
+            return;
+        }
 
         switch (attackerCard.getName()) {
             case "Disciple" -> {
-                if (attackedCoordinates.getX() != getFrontRow() && attackedCoordinates.getX() != getBackRow())
-                    return; //TODO ADD OUTPUT
+                if (attackedCoordinates.getX() != getFrontRow() && attackedCoordinates.getX() != getBackRow()) {
+                    useAbilityOutput.put("error", "Attacked card does not belong to the current player.");
+                    Game.getInstance().getOutput().add(useAbilityOutput);
+                    return;
+                }
             }
             case "The Ripper", "Miraj", "The Cursed One" -> {
-                if (attackedCoordinates.getX() == getFrontRow() && attackedCoordinates.getX() == getBackRow())
-                    return; //TODO ADD OUTPUT
+                if (attackedCoordinates.getX() == getFrontRow() && attackedCoordinates.getX() == getBackRow()) {
+                    useAbilityOutput.put("error", "Attacked card does not belong to the enemy.");
+                    Game.getInstance().getOutput().add(useAbilityOutput);
+                    return;
+                }
                 if (attackedCard.getMinionType() != MinionCard.Type.TANK)
-                    if (checkForTank())
-                        return; //TODO ADD OUTPUT
+                    if (checkForTank()) {
+                        useAbilityOutput.put("error", "Attacked card is not of type 'Tank’.");
+                        Game.getInstance().getOutput().add(useAbilityOutput);
+                        return;
+                    }
             }
         }
 
@@ -188,32 +226,67 @@ public class Player {
     public void attackHero(Coordinates attackerCoordinates, HeroCard heroCard) {
         MinionCard attackerCard = Board.getInstance().getCard(attackerCoordinates);
 
-        if (!validAttacker(attackerCard))
-            return;
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode attackHeroOutput = objectMapper.createObjectNode();
+        attackHeroOutput.put("command", "useAttackHero");
+        ObjectNode attackerCoords = objectMapper.createObjectNode();
+        attackerCoords.put("x", attackerCoordinates.getX());
+        attackerCoords.put("y", attackerCoordinates.getY());
 
-        if (checkForTank())
-            return; //TODO ADD OUTPUT
+        if (attackerCard.isFrozen()) {
+            attackHeroOutput.put("error", "Attacker card is frozen.");
+            Game.getInstance().getOutput().add(attackHeroOutput);
+            return;
+        }
+        if (attackerCard.hasAttacked()) {
+            attackHeroOutput.put("error", "Attacker card has already attacked this turn.");
+            Game.getInstance().getOutput().add(attackHeroOutput);
+            return;
+        }
+
+        if (checkForTank()) {
+            attackHeroOutput.put("error", "Attacked card is not of type 'Tank’.");
+            Game.getInstance().getOutput().add(attackHeroOutput);
+            return;
+        }
 
         heroCard.setHealth(heroCard.getHealth() - attackerCard.getAttackDamage());
         attackerCard.setHasAttacked(true);
         if (heroCard.getHealth() <= 0)
-            return; //TODO HANDLE GAME ENDING
+            Game.getInstance().end();
     }
 
     public void useHeroAbility(int affectedRow) {
-        if (currentMana < heroCard.getMana())
-            return; //TODO ADD OUTPUT
-        if (heroCard.hasAttacked())
-            return; //TODO ADD OUTPUT
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode heroAbilityOutput = objectMapper.createObjectNode();
+        heroAbilityOutput.put("command", "useHeroAbility");
+        heroAbilityOutput.put("affectedRow", affectedRow);
+
+        if (currentMana < heroCard.getMana()) {
+            heroAbilityOutput.put("error", "Not enough mana to use hero's ability.");
+            Game.getInstance().getOutput().add(heroAbilityOutput);
+            return;
+        }
+        if (heroCard.hasAttacked()) {
+            heroAbilityOutput.put("error", "Hero has already attacked this turn.");
+            Game.getInstance().getOutput().add(heroAbilityOutput);
+            return;
+        }
 
         switch (heroCard.getName()) {
             case "Lord Royce", "Empress Thorina" -> {
-                if (affectedRow == getFrontRow() || affectedRow == getBackRow())
-                    return; //TODO ADD OUTPUT
+                if (affectedRow == getFrontRow() || affectedRow == getBackRow()) {
+                    heroAbilityOutput.put("error", "Selected row does not belong to the enemy.");
+                    Game.getInstance().getOutput().add(heroAbilityOutput);
+                    return;
+                }
             }
             case "General Kocioraw", "King Mudface" -> {
-                if (affectedRow != getFrontRow() || affectedRow != getBackRow())
-                    return; //TODO ADD OUTPUT
+                if (affectedRow != getFrontRow() || affectedRow != getBackRow()) {
+                    heroAbilityOutput.put("error", "Selected row does not belong to the current player.");
+                    Game.getInstance().getOutput().add(heroAbilityOutput);
+                    return;
+                }
             }
         }
 
@@ -222,7 +295,88 @@ public class Player {
         attackedRow.setY(0);
         heroCard.getAbility().run(attackedRow);
         heroCard.setHasAttacked(true);
-        //TODO HANDLE DEATHS
+
+        for (int i = 0; i < Board.getInstance().getGameBoard().get(affectedRow).size(); i++)
+            if (Board.getInstance().getGameBoard().get(affectedRow).get(i).getHealth() <= 0) {
+                Board.getInstance().getGameBoard().get(affectedRow).remove(i);
+                i--;
+            }
+    }
+
+    public void getCardsInHand() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode handOutput = objectMapper.createObjectNode();
+        handOutput.put("command", "getCardsInHand");
+        handOutput.put("playerIdx", playerIndex);
+        ArrayNode handCards = objectMapper.createArrayNode();
+        for (MinionCard minionCard : hand) {
+            ObjectNode currentCard = objectMapper.createObjectNode();
+            currentCard.put("mana", minionCard.getMana());
+            currentCard.put("attackDamage", minionCard.getAttackDamage());
+            currentCard.put("health", minionCard.getHealth());
+            currentCard.put("description", minionCard.getDescription());
+            ArrayNode colors = objectMapper.createArrayNode();
+            for (String color : minionCard.getColors()) {
+                colors.add(color);
+            }
+            currentCard.put("colors", colors);
+            currentCard.put("name", minionCard.getName());
+            handCards.add(currentCard);
+        }
+        handOutput.put("output", handCards);
+        Game.getInstance().getOutput().add(handOutput);
+    }
+
+    public void getPlayerDeck() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode deckOutput = objectMapper.createObjectNode();
+        deckOutput.put("command", "getPlayerDeck");
+        deckOutput.put("playerIdx", playerIndex);
+        ArrayNode deckCards = objectMapper.createArrayNode();
+        for (MinionCard minionCard : hand) {
+            ObjectNode currentCard = objectMapper.createObjectNode();
+            currentCard.put("mana", minionCard.getMana());
+            currentCard.put("attackDamage", minionCard.getAttackDamage());
+            currentCard.put("health", minionCard.getHealth());
+            currentCard.put("description", minionCard.getDescription());
+            ArrayNode colors = objectMapper.createArrayNode();
+            for (String color : minionCard.getColors()) {
+                colors.add(color);
+            }
+            currentCard.put("colors", colors);
+            currentCard.put("name", minionCard.getName());
+            deckCards.add(currentCard);
+        }
+        deckOutput.put("output", deckCards);
+        Game.getInstance().getOutput().add(deckOutput);
+    }
+
+    public void getPlayerHero() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode heroCardOutput = objectMapper.createObjectNode();
+        heroCardOutput.put("command", "getPlayerHero");
+        heroCardOutput.put("playerIdx", playerIndex);
+        ObjectNode heroCardStats = objectMapper.createObjectNode();
+        heroCardStats.put("mana", heroCard.getMana());
+        heroCardStats.put("description", heroCard.getDescription());
+        ArrayNode colors = objectMapper.createArrayNode();
+        for (String color : heroCard.getColors()) {
+            colors.add(color);
+        }
+        heroCardStats.put("colors", colors);
+        heroCardStats.put("name", heroCard.getName());
+        heroCardStats.put("health", heroCard.getHealth());
+        heroCardOutput.put("output", heroCardStats);
+        Game.getInstance().getOutput().add(heroCardOutput);
+    }
+
+    public void getPlayerMana() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode manaOutput = objectMapper.createObjectNode();
+        manaOutput.put("command", "getPlayerMana");
+        manaOutput.put("playerIdx", playerIndex);
+        manaOutput.put("output", currentMana);
+        Game.getInstance().getOutput().add(manaOutput);
     }
 
     public boolean checkForTank() {
@@ -233,19 +387,24 @@ public class Player {
         return false;
     }
 
-    public boolean validAttacker(MinionCard attackerCard) {
-        if (attackerCard.isFrozen())
-            return false; //TODO ADD OUTPUT
-        if (attackerCard.hasAttacked())
-            return false; //TODO ADD OUTPUT
-        return true;
-    }
-
     public int getFrontRow() {
         return playerIndex == 1 ? 2 : 1;
     }
 
     public int getBackRow() {
         return playerIndex == 1 ? 3 : 0;
+    }
+
+    public void getPlayerWins() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode winOutput = objectMapper.createObjectNode();
+        if (playerIndex == 1)
+            winOutput.put("command", "getPlayerOneWins");
+        else if (playerIndex == 2)
+            winOutput.put("command", "getPlayerTwoWins");
+        else
+            throw new IllegalArgumentException("Invalid playerIndex");
+        winOutput.put("output", winCount);
+        Game.getInstance().getOutput().add(winOutput);
     }
 }

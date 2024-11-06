@@ -1,6 +1,8 @@
 package game;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.*;
 import game.board.Board;
 import game.cards.HeroCard;
@@ -11,8 +13,10 @@ import lombok.Data;
 public class Game {
     private static Game game = new Game();
 
-    private Player player1 = new Player(1);
-    private Player player2 = new Player(2);
+    private Player player1 = new Player(1, "Player one");
+    private Player player2 = new Player(2, "Player two");
+
+    private ArrayNode output;
 
     private int gameCount = 0;
 
@@ -31,6 +35,7 @@ public class Game {
     }
 
     public void runGames(Input input, ArrayNode output) {
+        this.output = output;
         initPlayer(player1, input.getPlayerOneDecks());
         initPlayer(player2, input.getPlayerTwoDecks());
 
@@ -39,9 +44,7 @@ public class Game {
             initGame(gameInput.getStartGame());
             ActionHandler.getInstance().startRound();
             for (ActionsInput actionsInput : gameInput.getActions()) {
-                System.out.println("Round: " + ActionHandler.getInstance().getRoundNumber() + " Turn: " + ActionHandler.getInstance().getTurnNumber() + " Player: " + ActionHandler.getInstance().getCurrentPlayer().getPlayerIndex());
-                System.out.println(actionsInput.getCommand());
-                ActionHandler.getInstance().run(actionsInput, output);
+                ActionHandler.getInstance().run(actionsInput);
             }
         }
     }
@@ -59,5 +62,41 @@ public class Game {
 
     public void initPlayer(Player player, DecksInput decksInput) {
         player.initDecks(decksInput);
+    }
+
+    public void end() {
+        Player winner = ActionHandler.getInstance().getCurrentPlayer();
+        winner.setWinCount(winner.getWinCount() + 1);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ObjectNode endOutput = objectMapper.createObjectNode();
+        endOutput.put("gameEnded", ActionHandler.getInstance().getCurrentPlayer().getPlayerName() + " killed the enemy hero.");
+        output.add(endOutput);
+    }
+
+    public Player getPlayer(int playerIndex) {
+        if (playerIndex == 1)
+            return player1;
+        else if (playerIndex == 2)
+            return player2;
+        return null;
+    }
+
+    public void getPlayerTurn() {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ObjectNode turnOutput = objectMapper.createObjectNode();
+        turnOutput.put("command", "getPlayerTurn");
+        turnOutput.put("turn", ActionHandler.getInstance().getCurrentPlayer().getPlayerIndex());
+        output.add(turnOutput);
+    }
+
+    public void getTotalGamesPlayed() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode totalGamesPlayed = objectMapper.createObjectNode();
+        totalGamesPlayed.put("command", "getTotalGamesPlayed");
+        totalGamesPlayed.put("output", gameCount);
+        output.add(totalGamesPlayed);
     }
 }
