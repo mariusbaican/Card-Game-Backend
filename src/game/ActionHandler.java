@@ -56,16 +56,12 @@ public class ActionHandler {
             }
             case "placeCard" ->
                 currentPlayer.placeCard(actionsInput.getHandIdx());
-
             case "cardUsesAttack" ->
                 currentPlayer.attackCard(actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
-
             case "cardUsesAbility" ->
                 currentPlayer.useAbility(actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
-
             case "useAttackHero" ->
                 currentPlayer.attackHero(actionsInput.getCardAttacker(), awaitingPlayer.getHeroCard());
-
             case "useHeroAbility" ->
                 currentPlayer.useHeroAbility(actionsInput.getAffectedRow());
             case "getCardsInHand" ->
@@ -114,6 +110,7 @@ public class ActionHandler {
                 minionCard.setFrozen(false);
                 minionCard.setHasAttacked(false);
         }
+        currentPlayer.getHeroCard().setHasAttacked(false);
         swapPlayers();
     }
 

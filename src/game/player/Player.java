@@ -60,10 +60,6 @@ public class Player {
     public Player selectDeck(int index, int shuffleSeed) {
         currentDeck = new Deck(decks.get(index));
         currentDeck.shuffle(shuffleSeed);
-        int idx = 0;
-        for (MinionCard card : currentDeck.getCards()) {
-            idx++;
-        }
         return this;
     }
 
@@ -77,7 +73,6 @@ public class Player {
     }
 
     public void placeCard(int handIndex) {
-        //TODO ADD OUTPUTS
         if (hand.isEmpty())
             return;
 
@@ -144,6 +139,7 @@ public class Player {
             Game.getInstance().getOutput().add(attackCardOutput);
             return;
         }
+
         if (attackerCard.hasAttacked()) {
             attackCardOutput.put("error", "Attacker card has already attacked this turn.");
             Game.getInstance().getOutput().add(attackCardOutput);
@@ -160,6 +156,7 @@ public class Player {
         }
 
         attackedCard.setHealth(attackedCard.getHealth() - attackerCard.getAttackDamage());
+        System.out.println("damage " + attackerCard.getAttackDamage());
         attackerCard.setHasAttacked(true);
         if (attackedCard.getHealth() <= 0)
             Board.getInstance().removeCard(attackedCoordinates);
@@ -204,7 +201,7 @@ public class Player {
                 }
             }
             case "The Ripper", "Miraj", "The Cursed One" -> {
-                if (attackedCoordinates.getX() == getFrontRow() && attackedCoordinates.getX() == getBackRow()) {
+                if (attackedCoordinates.getX() == getFrontRow() || attackedCoordinates.getX() == getBackRow()) {
                     useAbilityOutput.put("error", "Attacked card does not belong to the enemy.");
                     Game.getInstance().getOutput().add(useAbilityOutput);
                     return;
@@ -284,7 +281,7 @@ public class Player {
                 }
             }
             case "General Kocioraw", "King Mudface" -> {
-                if (affectedRow != getFrontRow() || affectedRow != getBackRow()) {
+                if (affectedRow != getFrontRow() && affectedRow != getBackRow()) {
                     heroAbilityOutput.put("error", "Selected row does not belong to the current player.");
                     Game.getInstance().getOutput().add(heroAbilityOutput);
                     return;

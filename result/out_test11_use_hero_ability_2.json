@@ -1,8 +1,4 @@
 [ {
-  "command" : "useHeroAbility",
-  "affectedRow" : 1,
-  "error" : "Selected row does not belong to the current player."
-}, {
   "command" : "getCardAtPosition",
   "x" : 1,
   "y" : 0,
@@ -27,10 +23,6 @@
     "name" : "Disciple"
   }
 }, {
-  "command" : "useHeroAbility",
-  "affectedRow" : 1,
-  "error" : "Selected row does not belong to the current player."
-}, {
   "command" : "getFrozenCardsOnTable",
   "output" : [ ]
 }, {
@@ -43,12 +35,12 @@
 }, {
   "command" : "getPlayerMana",
   "playerIdx" : 2,
-  "output" : 7
+  "output" : 5
 }, {
   "command" : "getCardsOnTable",
   "output" : [ [ ], [ {
     "mana" : 2,
-    "attackDamage" : 6,
+    "attackDamage" : 7,
     "health" : 4,
     "description" : "Premium card: Ravished by the winds of hell, no soul is to be forgiven.",
     "colors" : [ "Black", "Yellow" ],

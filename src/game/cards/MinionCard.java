@@ -23,6 +23,8 @@ public class MinionCard extends Card {
     public MinionCard(CardInput cardInput) {
         super(cardInput);
         this.attackDamage = cardInput.getAttackDamage();
+        isFrozen = true;
+        hasAttacked = false;
 
         initAbilities(cardInput.getName());
     }
@@ -33,58 +35,55 @@ public class MinionCard extends Card {
         description = minionCard.description;
         colors = minionCard.colors;
         name = minionCard.name;
-        isFrozen = minionCard.isFrozen;
-        hasAttacked = minionCard.hasAttacked;
-        ability = minionCard.ability;
+        isFrozen = false;
+        hasAttacked = false;
         cardType = minionCard.cardType;
         attackDamage = minionCard.attackDamage;
         minionType = minionCard.minionType;
+
+        initAbilities(name);
     }
 
     private void initAbilities (String name) {
         switch (name) {
             case "Sentinel", "Berserker" -> {
                 minionType = Type.REGULAR;
-                setAbility(null);
+                this.setAbility(null);
             }
             case "Goliath", "Warden" -> {
                 minionType = Type.TANK;
-                setAbility(null);
+                this.setAbility(null);
             }
             case "The Cursed One" -> {
                 minionType = Type.DRUID;
-                setAbility((Coordinates coordinates) -> {
+                this.setAbility((Coordinates coordinates) -> {
                     int newAttackDamage = Board.getInstance().getCard(coordinates).getHealth();
                     int newHealth = Board.getInstance().getCard(coordinates).getAttackDamage();
                     Board.getInstance().getCard(coordinates).setAttackDamage(newAttackDamage);
                     Board.getInstance().getCard(coordinates).setHealth(newHealth);
-                    System.out.println("The Cursed One");
                 });
             }
             case "Disciple" -> {
                 minionType = Type.DRUID;
-                setAbility((Coordinates coordinates) -> {
+                this.setAbility((Coordinates coordinates) -> {
                     int newHealth = Board.getInstance().getCard(coordinates).getHealth() + 2;
                     Board.getInstance().getCard(coordinates).setHealth(newHealth);
-                    System.out.println("The Disciple");
                 });
             }
             case "The Ripper" -> {
                 minionType = Type.LEGENDARY;
-                setAbility((Coordinates coordinates) -> {
+                this.setAbility((Coordinates coordinates) -> {
                     int newAttackDamage = Math.max(Board.getInstance().getCard(coordinates).getAttackDamage() - 2, 0);
                     Board.getInstance().getCard(coordinates).setAttackDamage(newAttackDamage);
-                    System.out.println("The Ripper");
                 });
             }
             case "Miraj" -> {
                 minionType = Type.LEGENDARY;
-                setAbility((Coordinates coordinates) -> {
+                this.setAbility((Coordinates coordinates) -> {
                     int newMirajHealth = Board.getInstance().getCard(coordinates).getHealth();
-                    int newOpponentHealth = getHealth();
-                    setHealth(newMirajHealth);
+                    int newOpponentHealth = this.getHealth();
+                    this.setHealth(newMirajHealth);
                     Board.getInstance().getCard(coordinates).setHealth(newOpponentHealth);
-                    System.out.println("The Miraj");
                 });
             }
             default -> System.out.println("Invalid Minion name");

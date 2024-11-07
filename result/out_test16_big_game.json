@@ -84,10 +84,6 @@
   "command" : "getPlayerTurn",
   "output" : 2
 }, {
-  "command" : "useHeroAbility",
-  "affectedRow" : 0,
-  "error" : "Selected row does not belong to the current player."
-}, {
   "command" : "useAttackHero",
   "cardAttacker" : {
     "x" : 0,
@@ -122,7 +118,7 @@
   "output" : {
     "mana" : 2,
     "attackDamage" : 2,
-    "health" : 2,
+    "health" : 3,
     "description" : "Standard card: A drink can always be served, with the blood of his enemies.",
     "colors" : [ "Red", "Blue", "Pink" ],
     "name" : "Berserker"
@@ -133,7 +129,7 @@
 }, {
   "command" : "getPlayerMana",
   "playerIdx" : 2,
-  "output" : 7
+  "output" : 5
 }, {
   "command" : "useAttackHero",
   "cardAttacker" : {
@@ -148,7 +144,7 @@
   "output" : [ [ {
     "mana" : 2,
     "attackDamage" : 2,
-    "health" : 2,
+    "health" : 3,
     "description" : "Standard card: A drink can always be served, with the blood of his enemies.",
     "colors" : [ "Red", "Blue", "Pink" ],
     "name" : "Berserker"

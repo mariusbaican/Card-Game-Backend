@@ -16,6 +16,7 @@ public class HeroCard extends Card {
         super(cardInput);
         health = 30;
         cardType = Type.HERO;
+        hasAttacked = false;
 
         initAbilities(cardInput.getName());
     }
@@ -25,7 +26,6 @@ public class HeroCard extends Card {
             case "Lord Royce" -> this.setAbility((Coordinates coordinates) -> {
                 for (MinionCard minionCard : Board.getInstance().getGameBoard().get(coordinates.getX()))
                     minionCard.setFrozen(true);
-                System.out.println("Lord Royce");
             });
             case "Empress Thorina" -> this.setAbility((Coordinates coordinates) -> {
                 MinionCard healthiestCard = Board.getInstance().getGameBoard().get(coordinates.getX()).get(0);
@@ -33,17 +33,14 @@ public class HeroCard extends Card {
                     if (minionCard.getHealth() > healthiestCard.getHealth())
                         healthiestCard = minionCard;
                 healthiestCard.setHealth(0);
-                System.out.println("Empress Thorina");
             });
             case "King Mudface" -> this.setAbility((Coordinates coordinates) -> {
                 for (MinionCard minionCard : Board.getInstance().getGameBoard().get(coordinates.getX()))
                     minionCard.setHealth(minionCard.getHealth() + 1);
-                System.out.println("King Mudface");
             });
             case "General Kocioraw" -> this.setAbility((Coordinates coordinates) -> {
                 for (MinionCard minionCard : Board.getInstance().getGameBoard().get(coordinates.getX()))
                     minionCard.setAttackDamage(minionCard.getAttackDamage() + 1);
-                System.out.println("General Kocioraw");
             });
             default ->
                     throw new IllegalStateException("Illegal Hero card name: " + name);

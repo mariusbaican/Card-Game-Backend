@@ -24,7 +24,6 @@ public abstract class Card {
 
     protected int mana;
     protected int health;
-    protected int initialHealth;
     protected String  description;
     protected ArrayList<String> colors = new ArrayList<>();
     protected String name;
@@ -36,7 +35,6 @@ public abstract class Card {
     public Card(CardInput cardInput) {
         this.mana = cardInput.getMana();
         this.health = cardInput.getHealth();
-        initialHealth = cardInput.getHealth();
         this.description = cardInput.getDescription();
         this.colors = cardInput.getColors();
         this.name = cardInput.getName();
