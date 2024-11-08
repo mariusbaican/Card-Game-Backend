@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.Coordinates;
 import game.Game;
 import game.cards.MinionCard;
+import game.util.Constants;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 @Data
 /**
@@ -18,21 +20,14 @@ public final class Board {
 
     private static Board board = new Board();
     private ArrayList<ArrayList<MinionCard>> gameBoard;
-    private final int rowCount = 4;
-    private final int columnCount = 5;
-
-    private final int playerOneBackRow = 3;
-    private final int playerOneFrontRow = 2;
-    private final int playerTwoFrontRow = 1;
-    private final int playerTwoBackRow = 0;
 
     /**
      * This constructor instantiates the rows and columns of the board.
      */
     private Board() {
-        gameBoard = new ArrayList<>(rowCount);
-        for (int i = 0; i < rowCount; i++) {
-            gameBoard.add(new ArrayList<>(columnCount));
+        gameBoard = new ArrayList<>(Constants.ROW_COUNT);
+        for (int i = 0; i < Constants.ROW_COUNT; i++) {
+            gameBoard.add(new ArrayList<>(Constants.COLUMN_COUNT));
         }
     }
 
@@ -40,10 +35,7 @@ public final class Board {
      * This method resets the rows and columns of the board.
      */
     public void reset() {
-        gameBoard = new ArrayList<>(rowCount);
-        for (int i = 0; i < rowCount; i++) {
-            gameBoard.add(new ArrayList<>(columnCount));
-        }
+        board = new Board();
     }
 
     /**
@@ -91,6 +83,7 @@ public final class Board {
      * @param y The column of the desired card to be added to output.
      */
     public void getCardAtPosition(final int x, final int y) {
+        // I blame the lack of a Coordinates(int x, int y) constructor for this
         Coordinates coordinates = new Coordinates();
         coordinates.setX(x);
         coordinates.setY(y);

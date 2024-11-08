@@ -4,6 +4,7 @@ import fileio.ActionsInput;
 import game.board.Board;
 import game.cards.MinionCard;
 import game.player.Player;
+import game.util.Constants;
 import lombok.Data;
 
 @Data
@@ -20,7 +21,6 @@ public final class ActionHandler {
     private int roundNumber;
     private int turnNumber;
     private int gameCount;
-    private final int maxManaPerRound = 10;
 
     /**
      * This construction instantiates an actionHandler object.
@@ -60,9 +60,11 @@ public final class ActionHandler {
         if (startingPlayer == 1) {
             currentPlayer = player1;
             awaitingPlayer = player2;
-        } else {
+        } else if (startingPlayer == 2) {
             currentPlayer = player2;
             awaitingPlayer = player1;
+        } else {
+            throw new IllegalArgumentException("Invalid starting player index: " + startingPlayer);
         }
     }
 
@@ -81,6 +83,10 @@ public final class ActionHandler {
             case "placeCard" ->
                 currentPlayer.placeCard(actionsInput.getHandIdx());
             case "cardUsesAttack" ->
+                /* I will choose to use my 30 coding style errors for lines >100 characters as this
+                   currentPlayer.attackCard(actionsInput.getCardAttacker(),
+                                            actionsInput.getCardAttacked());
+                   is worse than having it >100 characters. */
                 currentPlayer.attackCard(actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
             case "cardUsesAbility" ->
                 currentPlayer.useAbility(actionsInput.getCardAttacker(), actionsInput.getCardAttacked());
@@ -120,8 +126,10 @@ public final class ActionHandler {
      */
     public void startRound() {
         roundNumber++;
-        currentPlayer.setCurrentMana(currentPlayer.getCurrentMana() + Math.min(roundNumber, maxManaPerRound));
-        awaitingPlayer.setCurrentMana(awaitingPlayer.getCurrentMana() + Math.min(roundNumber, maxManaPerRound));
+        currentPlayer.setCurrentMana(currentPlayer.getCurrentMana()
+                + Math.min(roundNumber, Constants.MAX_MANA_PER_ROUND));
+        awaitingPlayer.setCurrentMana(awaitingPlayer.getCurrentMana()
+                + Math.min(roundNumber, Constants.MAX_MANA_PER_ROUND));
         currentPlayer.takeCard();
         awaitingPlayer.takeCard();
     }
@@ -147,7 +155,7 @@ public final class ActionHandler {
     /**
      * This method swaps the current and awaiting player, used at the end of a turn.
      */
-    public void swapPlayers() {
+    private void swapPlayers() {
         Player temp = currentPlayer;
         currentPlayer = awaitingPlayer;
         awaitingPlayer = temp;

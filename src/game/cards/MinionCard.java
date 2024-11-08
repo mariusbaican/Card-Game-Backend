@@ -23,8 +23,8 @@ public class MinionCard extends Card {
         LEGENDARY
     }
 
-    protected int attackDamage;
-    protected Type minionType;
+    private int attackDamage;
+    private Type minionType;
 
     /**
      * This constructor creates a minionCard object based on a given cardInput.
@@ -55,6 +55,8 @@ public class MinionCard extends Card {
         attackDamage = minionCard.attackDamage;
         minionType = minionCard.minionType;
 
+        // This is why the ability interface made debugging hell
+        // Copying the ability over kept it attached to the original card, not the copy
         initAbilities(name);
     }
 

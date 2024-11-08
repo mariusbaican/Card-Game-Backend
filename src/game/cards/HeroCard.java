@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 import fileio.Coordinates;
 import game.board.Board;
+import game.util.Constants;
 import lombok.Data;
 
 @Data
@@ -13,14 +14,13 @@ import lombok.Data;
  * This class extends the Card super class, to add data specific to heroCards.
  */
 public class HeroCard extends Card {
-    private final int baseHealth = 30;
     /**
      * This constructor creates a heroCard object based on a given cardInput.
      * @param cardInput The desired heroCard information.
      */
     public HeroCard(final CardInput cardInput) {
         super(cardInput);
-        health = baseHealth;
+        health = Constants.HERO_BASE_HEALTH;
         cardType = Type.HERO;
         hasAttacked = false;
 
@@ -33,6 +33,7 @@ public class HeroCard extends Card {
      */
     private void initAbilities(final String name) {
         switch (name) {
+            // My beloved lambda expressions
             case "Lord Royce" -> this.setAbility((Coordinates coordinates) -> {
                 for (MinionCard minionCard : Board.getInstance().getGameBoard().get(coordinates.getX())) {
                     minionCard.setFrozen(true);
@@ -72,11 +73,13 @@ public class HeroCard extends Card {
         ObjectNode heroCardStats = objectMapper.createObjectNode();
         heroCardStats.put("mana", mana);
         heroCardStats.put("description", description);
+
         ArrayNode colorArray = objectMapper.createArrayNode();
         for (String color : colors) {
             colorArray.add(color);
         }
         heroCardStats.put("colors", colorArray);
+
         heroCardStats.put("name", name);
         heroCardStats.put("health", health);
         return heroCardStats;

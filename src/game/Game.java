@@ -52,7 +52,7 @@ public final class Game {
     }
 
     /**
-     * This method runs though all of the games in the input.
+     * This method runs though all the games in the input.
      * @param input The games to be played.
      * @param gameOutput The output to be written to.
      */
@@ -79,6 +79,7 @@ public final class Game {
      */
     public void initGame(final StartGameInput startGameInput) {
         gameCount++;
+        // Method chaining :D
         player1.selectDeck(startGameInput.getPlayerOneDeckIdx(), startGameInput.getShuffleSeed())
                 .setHeroCard(new HeroCard(startGameInput.getPlayerOneHero()));
 

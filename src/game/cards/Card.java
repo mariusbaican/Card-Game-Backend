@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 import lombok.Data;
-import util.Ability;
+import game.util.Ability;
 
 import java.util.ArrayList;
 
@@ -31,6 +31,7 @@ public class Card {
     protected String name;
     protected boolean isFrozen;
     protected boolean hasAttacked;
+    // I chose this approach for abilities cause it seemed cool, ended up making debugging hell
     protected Ability ability;
     protected Type cardType;
 
@@ -77,6 +78,7 @@ public class Card {
      * @return The object node containing the card's information.
      */
     public ObjectNode outputCard(final ObjectMapper objectMapper) {
+        // It's here just to be overwritten by the subclasses
         return null;
     }
 }

@@ -10,6 +10,7 @@ import game.Game;
 import game.board.Board;
 import game.cards.HeroCard;
 import game.cards.MinionCard;
+import game.util.Constants;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -97,7 +98,6 @@ public final class Player {
         if (hand.isEmpty()) {
             return;
         }
-
         MinionCard minionCard = hand.get(handIndex);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -107,7 +107,6 @@ public final class Player {
 
         if (currentMana < minionCard.getMana()) {
             placeCardOutput.put("error", "Not enough mana to place card on table.");
-
             Game.getInstance().getOutput().add(placeCardOutput);
             return;
         }
@@ -122,7 +121,7 @@ public final class Player {
                 throw new IllegalArgumentException("Invalid minionType" + minionCard.getMinionType());
         }
 
-        if (Board.getInstance().getGameBoard().get(row).size() >= Board.getInstance().getColumnCount()) {
+        if (Board.getInstance().getGameBoard().get(row).size() >= Constants.COLUMN_COUNT) {
             placeCardOutput.put("error", "Cannot place card on table since row is full.");
             Game.getInstance().getOutput().add(placeCardOutput);
             return;
@@ -147,6 +146,8 @@ public final class Player {
         ObjectNode attackCardOutput = objectMapper.createObjectNode();
         attackCardOutput.put("command", "cardUsesAttack");
 
+        // I would like to say, converting this duplicate code into a separate function would've
+        // probably been more annoying than leaving it as is.
         ObjectNode attackerCoords = objectMapper.createObjectNode();
         attackerCoords.put("x", attackerCoordinates.getX());
         attackerCoords.put("y", attackerCoordinates.getY());
@@ -163,6 +164,7 @@ public final class Player {
             return;
         }
 
+        // Same goes for this, writing output in separate methods is really weird.
         if (attackerCard.isFrozen()) {
             attackCardOutput.put("error", "Attacker card is frozen.");
             Game.getInstance().getOutput().add(attackCardOutput);
@@ -185,7 +187,6 @@ public final class Player {
         }
 
         attackedCard.setHealth(attackedCard.getHealth() - attackerCard.getAttackDamage());
-        System.out.println("damage " + attackerCard.getAttackDamage());
         attackerCard.setHasAttacked(true);
         if (attackedCard.getHealth() <= 0) {
             Board.getInstance().removeCard(attackedCoordinates);
@@ -271,6 +272,7 @@ public final class Player {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode attackHeroOutput = objectMapper.createObjectNode();
         attackHeroOutput.put("command", "useAttackHero");
+
         ObjectNode attackerCoords = objectMapper.createObjectNode();
         attackerCoords.put("x", attackerCoordinates.getX());
         attackerCoords.put("y", attackerCoordinates.getY());
@@ -340,13 +342,19 @@ public final class Player {
                 throw new IllegalStateException("Unexpected heroCard name: " + heroCard.getName());
         }
 
+        // Again the Coordinates constructor :(
         Coordinates attackedRow = new Coordinates();
         attackedRow.setX(affectedRow);
         attackedRow.setY(0);
+        /* I would like to defend my approach of passing the affectedRow as a set of Coordinates.
+           To avoid it, an extra interface would've been required which isn't very nice.
+           At that point I would've quit using this approach.
+         */
         heroCard.getAbility().run(attackedRow);
         heroCard.setHasAttacked(true);
         currentMana -= heroCard.getMana();
 
+        // As much as I love to use for-each, the fact that you can't remove inside it is annoying
         for (int i = 0; i < Board.getInstance().getGameBoard().get(affectedRow).size(); i++) {
             if (Board.getInstance().getGameBoard().get(affectedRow).get(i).getHealth() <= 0) {
                 Board.getInstance().getGameBoard().get(affectedRow).remove(i);
@@ -363,11 +371,11 @@ public final class Player {
         ObjectNode handOutput = objectMapper.createObjectNode();
         handOutput.put("command", "getCardsInHand");
         handOutput.put("playerIdx", playerIndex);
+
         ArrayNode handCards = objectMapper.createArrayNode();
         for (MinionCard minionCard : hand) {
             handCards.add(minionCard.outputCard(objectMapper));
         }
-
         handOutput.put("output", handCards);
         Game.getInstance().getOutput().add(handOutput);
     }
@@ -380,11 +388,11 @@ public final class Player {
         ObjectNode deckOutput = objectMapper.createObjectNode();
         deckOutput.put("command", "getPlayerDeck");
         deckOutput.put("playerIdx", playerIndex);
+
         ArrayNode deckCards = objectMapper.createArrayNode();
         for (MinionCard minionCard : currentDeck.getCards()) {
             deckCards.add(minionCard.outputCard(objectMapper));
         }
-
         deckOutput.put("output", deckCards);
         Game.getInstance().getOutput().add(deckOutput);
     }
@@ -433,9 +441,9 @@ public final class Player {
      */
     public int getFrontRow() {
         if (playerIndex == 1) {
-            return Board.getInstance().getPlayerOneFrontRow();
+            return Constants.PLAYER_ONE_FRONT_ROW;
         } else if (playerIndex == 2) {
-            return Board.getInstance().getPlayerTwoFrontRow();
+            return Constants.PLAYER_TWO_FRONT_ROW;
         } else {
             throw new IllegalArgumentException("Invalid playerIndex: " + playerIndex);
         }
@@ -447,9 +455,9 @@ public final class Player {
      */
     public int getBackRow() {
         if (playerIndex == 1) {
-            return Board.getInstance().getPlayerOneBackRow();
+            return Constants.PLAYER_ONE_BACK_ROW;
         } else if (playerIndex == 2) {
-            return Board.getInstance().getPlayerTwoBackRow();
+            return Constants.PLAYER_TWO_BACK_ROW;
         } else {
             throw new IllegalArgumentException("Invalid playerIndex: " + playerIndex);
         }
