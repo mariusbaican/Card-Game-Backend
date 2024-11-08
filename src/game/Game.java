@@ -3,25 +3,46 @@ package game;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import fileio.*;
+import fileio.ActionsInput;
+import fileio.DecksInput;
+import fileio.Input;
+import fileio.GameInput;
+import fileio.StartGameInput;
 import game.board.Board;
 import game.cards.HeroCard;
 import game.player.Player;
 import lombok.Data;
 
 @Data
-public class Game {
+/**
+ * This class stores all parts of the game and runs through the gameInputs.
+ */
+public final class Game {
     private static Game game = new Game();
 
-    private Player player1 = new Player(1, "Player one");
-    private Player player2 = new Player(2, "Player two");
+    private Player player1 = new Player(1);
+    private Player player2 = new Player(2);
 
     private ArrayNode output;
 
     private int gameCount = 0;
 
-    private Game() {}
+    /**
+     * This empty constructor creates a Game instance.
+     */
+    private Game() { }
 
+    /**
+     * This method returns the singleton Game object.
+     * @return The unique Game instance.
+     */
+    public static Game getInstance() {
+        return game;
+    }
+
+    /**
+     * This method calls the reset methods of each game component.
+     */
     private void resetGame() {
         player1.reset();
         player2.reset();
@@ -30,12 +51,13 @@ public class Game {
         Board.getInstance().reset();
     }
 
-    public static Game getInstance() {
-        return game;
-    }
-
-    public void runGames(Input input, ArrayNode output) {
-        this.output = output;
+    /**
+     * This method runs though all of the games in the input.
+     * @param input The games to be played.
+     * @param gameOutput The output to be written to.
+     */
+    public void runGames(final Input input, final ArrayNode gameOutput) {
+        this.output = gameOutput;
         gameCount = 0;
         initPlayer(player1, input.getPlayerOneDecks());
         initPlayer(player2, input.getPlayerTwoDecks());
@@ -50,7 +72,12 @@ public class Game {
         }
     }
 
-    public void initGame(StartGameInput startGameInput) {
+    /**
+     * This method initializes the game based on the given input. It handles deck selection
+     * and heroCard selection.
+     * @param startGameInput The desired start input.
+     */
+    public void initGame(final StartGameInput startGameInput) {
         gameCount++;
         player1.selectDeck(startGameInput.getPlayerOneDeckIdx(), startGameInput.getShuffleSeed())
                 .setHeroCard(new HeroCard(startGameInput.getPlayerOneHero()));
@@ -61,11 +88,19 @@ public class Game {
         ActionHandler.getInstance().addPlayers(player1, player2, startGameInput.getStartingPlayer());
     }
 
-    public void initPlayer(Player player, DecksInput decksInput) {
+    /**
+     * This method is used to initialize a player's decks.
+     * @param player The target player.
+     * @param decksInput The desired deck list.
+     */
+    public void initPlayer(final Player player, final DecksInput decksInput) {
         player.initDecks(decksInput);
         player.setWinCount(0);
     }
 
+    /**
+     * This method handles the game end, writing the winner to the output.
+     */
     public void end() {
         Player winner = ActionHandler.getInstance().getCurrentPlayer();
         winner.setWinCount(winner.getWinCount() + 1);
@@ -77,14 +112,24 @@ public class Game {
         output.add(endOutput);
     }
 
-    public Player getPlayer(int playerIndex) {
-        if (playerIndex == 1)
+    /**
+     * This method returns a player based on his index.
+     * @param playerIndex The desired playerIndex.
+     * @return The Player instance with the given index.
+     */
+    public Player getPlayer(final int playerIndex) {
+        if (playerIndex == 1) {
             return player1;
-        else if (playerIndex == 2)
+        } else if (playerIndex == 2) {
             return player2;
-        return null;
+        } else {
+            throw new IllegalArgumentException("Invalid playerIndex: " + playerIndex);
+        }
     }
 
+    /**
+     * This method adds to output the index of the player who has the current turn;
+     */
     public void getPlayerTurn() {
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -94,6 +139,9 @@ public class Game {
         output.add(turnOutput);
     }
 
+    /**
+     * This method adds to output the number of totalGamesPlayed.
+     */
     public void getTotalGamesPlayed() {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode totalGamesPlayed = objectMapper.createObjectNode();

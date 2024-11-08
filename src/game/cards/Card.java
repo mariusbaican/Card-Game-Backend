@@ -10,16 +10,18 @@ import java.util.ArrayList;
 
 
 @Data
-public abstract class Card {
+/**
+ * This is the super class of the two present card types, minionCard and heroCard
+ * with its goal being storing common data between the two types.
+ */
+public class Card {
 
+    /**
+     * This enum is used to specify if a card is a MINION or a HERO.
+     */
     public enum Type {
         MINION,
         HERO
-    }
-
-    public enum PlacementRow {
-        FRONT,
-        BACK
     }
 
     protected int mana;
@@ -32,7 +34,11 @@ public abstract class Card {
     protected Ability ability;
     protected Type cardType;
 
-    public Card(CardInput cardInput) {
+    /**
+     * This constructor created a Card object from a given cardInput.
+     * @param cardInput The information of the card to be created.
+     */
+    public Card(final CardInput cardInput) {
         this.mana = cardInput.getMana();
         this.health = cardInput.getHealth();
         this.description = cardInput.getDescription();
@@ -44,15 +50,33 @@ public abstract class Card {
         ability = null;
     }
 
-    public Card() {}
+    /**
+     * This is an empty constructor to create a Card object.
+     */
+    public Card() { }
 
+    /**
+     * This method is used to determine whether a card is frozen or not.
+     * @return True if card is frozen.
+     */
     public boolean isFrozen() {
         return isFrozen;
     }
 
-    public boolean hasAttacked() {return hasAttacked;}
+    /**
+     * This method is used to determine whether a card has attacked this turn or not.
+     * @return True if card has attacked.
+     */
+    public boolean hasAttacked() {
+        return hasAttacked;
+    }
 
-    public ObjectNode outputCard(ObjectMapper objectMapper) {
+    /**
+     * This method is used to convert a card to an objectNode, with the goal of adding it to output.
+     * @param objectMapper The object mapper used to create objectNodes and arrrayNodes.
+     * @return The object node containing the card's information.
+     */
+    public ObjectNode outputCard(final ObjectMapper objectMapper) {
         return null;
     }
 }

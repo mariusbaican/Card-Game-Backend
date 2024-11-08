@@ -1,6 +1,5 @@
 package game;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
 import game.board.Board;
 import game.cards.MinionCard;
@@ -8,7 +7,10 @@ import game.player.Player;
 import lombok.Data;
 
 @Data
-public class ActionHandler {
+/**
+ * This class is used to handle turns, rounds and actionInputs.
+ */
+public final class ActionHandler {
 
     private static ActionHandler actionHandler = new ActionHandler();
 
@@ -18,17 +20,28 @@ public class ActionHandler {
     private int roundNumber;
     private int turnNumber;
     private int gameCount;
+    private final int maxManaPerRound = 10;
 
+    /**
+     * This construction instantiates an actionHandler object.
+     */
     private ActionHandler() {
         gameCount = 0;
         roundNumber = 0;
         turnNumber = 1;
     }
 
+    /**
+     * This method returns the singleton actionHandler instance..
+     * @return Unique actionHandler instance.
+     */
     public static ActionHandler getInstance() {
         return actionHandler;
     }
 
+    /**
+     * This method resets the members of the actionHandler class.
+     */
     public void reset() {
         currentPlayer = null;
         awaitingPlayer = null;
@@ -37,7 +50,13 @@ public class ActionHandler {
         gameCount++;
     }
 
-    public void addPlayers(Player player1, Player player2, int startingPlayer) {
+    /**
+     * This method adds the players to the actionHandler.
+     * @param player1 Player1 instance.
+     * @param player2 Player2 instance.
+     * @param startingPlayer StartingPlayer's index.
+     */
+    public void addPlayers(final Player player1, final Player player2, final int startingPlayer) {
         if (startingPlayer == 1) {
             currentPlayer = player1;
             awaitingPlayer = player2;
@@ -47,11 +66,16 @@ public class ActionHandler {
         }
     }
 
-    public void run(ActionsInput actionsInput) {
+    /**
+     * This method handles all given actionInputs.
+     * @param actionsInput The current action to be completed.
+     */
+    public void run(final ActionsInput actionsInput) {
         switch (actionsInput.getCommand()) {
             case "endPlayerTurn" -> {
-                if (turnNumber % 2 == 0)
+                if (turnNumber % 2 == 0) {
                     startRound();
+                }
                 endTurn();
             }
             case "placeCard" ->
@@ -87,25 +111,31 @@ public class ActionHandler {
             case "getPlayerTwoWins" ->
                 Game.getInstance().getPlayer(2).getPlayerWins();
             default ->
-                throw new RuntimeException("Unknown command");
+                throw new IllegalArgumentException("Unknown command" + actionsInput.getCommand());
         }
     }
 
+    /**
+     * This method handles the start of a round, each player gaining mana and taking a card.
+     */
     public void startRound() {
         roundNumber++;
-        currentPlayer.setCurrentMana(currentPlayer.getCurrentMana() + Math.min(roundNumber, 10));
-        awaitingPlayer.setCurrentMana(awaitingPlayer.getCurrentMana() + Math.min(roundNumber, 10));
+        currentPlayer.setCurrentMana(currentPlayer.getCurrentMana() + Math.min(roundNumber, maxManaPerRound));
+        awaitingPlayer.setCurrentMana(awaitingPlayer.getCurrentMana() + Math.min(roundNumber, maxManaPerRound));
         currentPlayer.takeCard();
         awaitingPlayer.takeCard();
     }
 
+    /**
+     * This method handles the end of a turn, cards getting unfrozen and removing their hasAttacked status.
+     * It also swaps the current and awaiting player.
+     */
     public void endTurn() {
         turnNumber++;
         for (MinionCard minionCard : Board.getInstance().getGameBoard().get(currentPlayer.getFrontRow())) {
                 minionCard.setFrozen(false);
                 minionCard.setHasAttacked(false);
         }
-
         for (MinionCard minionCard : Board.getInstance().getGameBoard().get(currentPlayer.getBackRow())) {
                 minionCard.setFrozen(false);
                 minionCard.setHasAttacked(false);
@@ -114,6 +144,9 @@ public class ActionHandler {
         swapPlayers();
     }
 
+    /**
+     * This method swaps the current and awaiting player, used at the end of a turn.
+     */
     public void swapPlayers() {
         Player temp = currentPlayer;
         currentPlayer = awaitingPlayer;

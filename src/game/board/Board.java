@@ -11,25 +11,44 @@ import lombok.Data;
 import java.util.ArrayList;
 
 @Data
-public class Board {
+/**
+ * This class stores the cards on the game board.
+ */
+public final class Board {
 
     private static Board board = new Board();
     private ArrayList<ArrayList<MinionCard>> gameBoard;
+    private final int rowCount = 4;
+    private final int columnCount = 5;
 
+    private final int playerOneBackRow = 3;
+    private final int playerOneFrontRow = 2;
+    private final int playerTwoFrontRow = 1;
+    private final int playerTwoBackRow = 0;
+
+    /**
+     * This constructor instantiates the rows and columns of the board.
+     */
     private Board() {
-        gameBoard = new ArrayList<>(4);
-        for (int i = 0; i < 4; i++) {
-            gameBoard.add(new ArrayList<>(5));
+        gameBoard = new ArrayList<>(rowCount);
+        for (int i = 0; i < rowCount; i++) {
+            gameBoard.add(new ArrayList<>(columnCount));
         }
     }
 
+    /**
+     * This method resets the rows and columns of the board.
+     */
     public void reset() {
-        gameBoard = new ArrayList<>(4);
-        for (int i = 0; i < 4; i++) {
-            gameBoard.add(new ArrayList<>(5));
+        gameBoard = new ArrayList<>(rowCount);
+        for (int i = 0; i < rowCount; i++) {
+            gameBoard.add(new ArrayList<>(columnCount));
         }
     }
 
+    /**
+     * This method adds the cards on the board to the output.
+     */
     public void getCardsOnTable() {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode boardOutput = objectMapper.createObjectNode();
@@ -37,30 +56,41 @@ public class Board {
         ArrayNode boardCards = objectMapper.createArrayNode();
         for (ArrayList<MinionCard> cards : gameBoard) {
             ArrayNode rowCards = objectMapper.createArrayNode();
-            for (MinionCard minionCard : cards)
+            for (MinionCard minionCard : cards) {
                 rowCards.add(minionCard.outputCard(objectMapper));
+            }
             boardCards.add(rowCards);
         }
         boardOutput.put("output", boardCards);
         Game.getInstance().getOutput().add(boardOutput);
     }
 
+    /**
+     * This method adds the frozen cards on the board to the output.
+     */
     public void getFrozenCardsOnTable() {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode boardOutput = objectMapper.createObjectNode();
         boardOutput.put("command", "getFrozenCardsOnTable");
         ArrayNode boardCards = objectMapper.createArrayNode();
-        for (ArrayList<MinionCard> cards : gameBoard)
+        for (ArrayList<MinionCard> cards : gameBoard) {
             for (MinionCard minionCard : cards) {
-                if (!minionCard.isFrozen())
+                if (!minionCard.isFrozen()) {
                     continue;
+                }
                 boardCards.add(minionCard.outputCard(objectMapper));
             }
+        }
         boardOutput.put("output", boardCards);
         Game.getInstance().getOutput().add(boardOutput);
     }
 
-    public void getCardAtPosition(int x, int y) {
+    /**
+     * This method adds the card on row x, column y to the output.
+     * @param x The row of the desired card to be added to output.
+     * @param y The column of the desired card to be added to output.
+     */
+    public void getCardAtPosition(final int x, final int y) {
         Coordinates coordinates = new Coordinates();
         coordinates.setX(x);
         coordinates.setY(y);
@@ -86,17 +116,31 @@ public class Board {
         Game.getInstance().getOutput().add(cardOutput);
     }
 
+    /**
+     * This method returns the singleton Board.
+     * @return The unique instance of Board.
+     */
     public static Board getInstance() {
         return board;
     }
 
-    public MinionCard getCard(Coordinates coordinates) {
+    /**
+     * This method returns the card present at a desired set of coordinates.
+     * @param coordinates The coordinates of the desired card.
+     * @return The card present at the provided coordinates.
+     */
+    public MinionCard getCard(final Coordinates coordinates) {
           return gameBoard.get(coordinates.getX()).get(coordinates.getY());
     }
 
-    public void removeCard(Coordinates coordinates) {
-        if (gameBoard.get(coordinates.getX()).get(coordinates.getY()) == null)
+    /**
+     * THis method removes the card present at a desired set of coordinates.
+     * @param coordinates The coordinates of the desired card to be removed.
+     */
+    public void removeCard(final Coordinates coordinates) {
+        if (gameBoard.get(coordinates.getX()).get(coordinates.getY()) == null) {
             return;
+        }
 
         gameBoard.get(coordinates.getX()).remove(coordinates.getY());
     }
