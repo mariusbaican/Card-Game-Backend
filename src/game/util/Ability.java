@@ -2,10 +2,10 @@ package game.util;
 
 import fileio.Coordinates;
 
-@FunctionalInterface
 /**
  * This interface is used to store a card's ability directly in its instance.
  */
+@FunctionalInterface
 public interface Ability {
     /**
      * This method runs the ability of a card.

@@ -15,10 +15,10 @@ import lombok.Data;
 
 import java.util.ArrayList;
 
-@Data
 /**
  * This class stores a player's data.
  */
+@Data
 public final class Player {
 
     private ArrayList<Deck> decks;

@@ -7,10 +7,10 @@ import game.player.Player;
 import game.util.Constants;
 import lombok.Data;
 
-@Data
 /**
  * This class is used to handle turns, rounds and actionInputs.
  */
+@Data
 public final class ActionHandler {
 
     private static ActionHandler actionHandler = new ActionHandler();

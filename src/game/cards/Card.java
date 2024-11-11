@@ -8,22 +8,12 @@ import game.util.Ability;
 
 import java.util.ArrayList;
 
-
-@Data
 /**
  * This is the super class of the two present card types, minionCard and heroCard
  * with its goal being storing common data between the two types.
  */
+@Data
 public class Card {
-
-    /**
-     * This enum is used to specify if a card is a MINION or a HERO.
-     */
-    public enum Type {
-        MINION,
-        HERO
-    }
-
     protected int mana;
     protected int health;
     protected String  description;
@@ -33,7 +23,6 @@ public class Card {
     protected boolean hasAttacked;
     // I chose this approach for abilities cause it seemed cool, ended up making debugging hell
     protected Ability ability;
-    protected Type cardType;
 
     /**
      * This constructor created a Card object from a given cardInput.
@@ -45,7 +34,6 @@ public class Card {
         this.description = cardInput.getDescription();
         this.colors = cardInput.getColors();
         this.name = cardInput.getName();
-        cardType = null;
         isFrozen = false;
         hasAttacked = false;
         ability = null;

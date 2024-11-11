@@ -13,10 +13,10 @@ import game.cards.HeroCard;
 import game.player.Player;
 import lombok.Data;
 
-@Data
 /**
  * This class stores all parts of the game and runs through the gameInputs.
  */
+@Data
 public final class Game {
     private static Game game = new Game();
 

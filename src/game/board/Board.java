@@ -10,12 +10,11 @@ import game.util.Constants;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
-@Data
 /**
  * This class stores the cards on the game board.
  */
+@Data
 public final class Board {
 
     private static Board board = new Board();

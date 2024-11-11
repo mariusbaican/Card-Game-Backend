@@ -9,10 +9,10 @@ import game.board.Board;
 import game.util.Constants;
 import lombok.Data;
 
-@Data
 /**
  * This class extends the Card super class, to add data specific to heroCards.
  */
+@Data
 public class HeroCard extends Card {
     /**
      * This constructor creates a heroCard object based on a given cardInput.
@@ -21,7 +21,6 @@ public class HeroCard extends Card {
     public HeroCard(final CardInput cardInput) {
         super(cardInput);
         health = Constants.HERO_BASE_HEALTH;
-        cardType = Type.HERO;
         hasAttacked = false;
 
         initAbilities(cardInput.getName());

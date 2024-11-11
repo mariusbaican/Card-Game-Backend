@@ -8,10 +8,10 @@ import fileio.Coordinates;
 import game.board.Board;
 import lombok.Data;
 
-@Data
 /**
  * This class extends the Card super class, to add data specific to minionCards.
  */
+@Data
 public class MinionCard extends Card {
     /**
      * This enum is used to determine which row cards should be placed on.
@@ -51,7 +51,6 @@ public class MinionCard extends Card {
         name = minionCard.name;
         isFrozen = false;
         hasAttacked = false;
-        cardType = minionCard.cardType;
         attackDamage = minionCard.attackDamage;
         minionType = minionCard.minionType;
 

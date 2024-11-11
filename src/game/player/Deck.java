@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Collections;
 
-@Data
 /**
  * This class stores the cards in a player's deck.
  */
+@Data
 public final class Deck {
     private ArrayList<MinionCard> cards;
 
