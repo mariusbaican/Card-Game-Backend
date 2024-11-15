@@ -56,7 +56,7 @@ public final class Player {
     }
 
     /**
-     * This method resets a player's data.
+     * This method resets a player's currentMana, heroCard, currentDeck and hand.
      */
     public void reset() {
         currentMana = 0;
@@ -164,7 +164,8 @@ public final class Player {
             return;
         }
 
-        // Same goes for this, writing output in separate methods is really weird.
+        // Same goes for this, writing to output in separate methods
+        // is really annoying because of input parameters.
         if (attackerCard.isFrozen()) {
             attackCardOutput.put("error", "Attacker card is frozen.");
             Game.getInstance().getOutput().add(attackCardOutput);

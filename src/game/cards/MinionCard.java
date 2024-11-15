@@ -63,7 +63,8 @@ public class MinionCard extends Card {
      * This method initializes the abilities specific to each card.
      * @param name The name of the desired card.
      */
-    private void initAbilities(final String name) {
+    @Override
+    protected void initAbilities(final String name) {
         switch (name) {
             case "Sentinel", "Berserker" -> {
                 minionType = Type.REGULAR;

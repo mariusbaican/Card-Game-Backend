@@ -31,10 +31,40 @@ public final class Board {
     }
 
     /**
+     * This method returns the singleton Board.
+     * @return The unique instance of Board.
+     */
+    public static Board getInstance() {
+        return board;
+    }
+
+    /**
      * This method resets the rows and columns of the board.
      */
     public void reset() {
         board = new Board();
+    }
+
+
+
+    /**
+     * This method returns the card present at a desired set of coordinates.
+     * @param coordinates The coordinates of the desired card.
+     * @return The card present at the provided coordinates.
+     */
+    public MinionCard getCard(final Coordinates coordinates) {
+        return gameBoard.get(coordinates.getX()).get(coordinates.getY());
+    }
+
+    /**
+     * THis method removes the card present at a desired set of coordinates.
+     * @param coordinates The coordinates of the desired card to be removed.
+     */
+    public void removeCard(final Coordinates coordinates) {
+        if (gameBoard.get(coordinates.getX()).get(coordinates.getY()) == null) {
+            return;
+        }
+        gameBoard.get(coordinates.getX()).remove(coordinates.getY());
     }
 
     /**
@@ -103,37 +133,7 @@ public final class Board {
         cardOutput.put("y", y);
 
         MinionCard minionCard = getCard(coordinates);
-
         cardOutput.put("output", minionCard.outputCard(objectMapper));
         Game.getInstance().getOutput().add(cardOutput);
-    }
-
-    /**
-     * This method returns the singleton Board.
-     * @return The unique instance of Board.
-     */
-    public static Board getInstance() {
-        return board;
-    }
-
-    /**
-     * This method returns the card present at a desired set of coordinates.
-     * @param coordinates The coordinates of the desired card.
-     * @return The card present at the provided coordinates.
-     */
-    public MinionCard getCard(final Coordinates coordinates) {
-          return gameBoard.get(coordinates.getX()).get(coordinates.getY());
-    }
-
-    /**
-     * THis method removes the card present at a desired set of coordinates.
-     * @param coordinates The coordinates of the desired card to be removed.
-     */
-    public void removeCard(final Coordinates coordinates) {
-        if (gameBoard.get(coordinates.getX()).get(coordinates.getY()) == null) {
-            return;
-        }
-
-        gameBoard.get(coordinates.getX()).remove(coordinates.getY());
     }
 }

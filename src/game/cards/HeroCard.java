@@ -30,7 +30,8 @@ public class HeroCard extends Card {
      * This method initializes the abilities specific to each card.
      * @param name The name of the desired card.
      */
-    private void initAbilities(final String name) {
+    @Override
+    protected void initAbilities(final String name) {
         switch (name) {
             // My beloved lambda expressions
             case "Lord Royce" -> this.setAbility((Coordinates coordinates) -> {
