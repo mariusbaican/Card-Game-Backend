@@ -74,7 +74,7 @@ public class Card {
      * This method initializes the abilities specific to each card.
      * @param name The name of the desired card.
      */
-    protected void initAbilities(String name) {
+    protected void initAbilities(final String name) {
         // It's here just to be overwritten by the subclasses
     }
 }
