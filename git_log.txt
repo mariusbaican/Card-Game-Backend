@@ -1,0 +1,111 @@
+commit 0da68ae1f6e93e7eb890566b25afb1bb8b0b3ed8
+Author: mariusbaican <marius3342@gmail.com>
+Date:   Fri Nov 15 13:35:49 2024 +0200
+
+    Cleaned up checkstyle
+
+commit a5c7ea0602db694891032d9a587afd6ff9a1c16c
+Author: mariusbaican <marius3342@gmail.com>
+Date:   Fri Nov 15 13:32:37 2024 +0200
+
+    Added README
+
+commit 87568895486eefa180f2b03f3304c9981662fce4
+Author: mariusbaican <marius3342@gmail.com>
+Date:   Fri Nov 15 13:31:27 2024 +0200
+
+    Added README
+
+commit abab6442da119365ca1358b97aa627a50e71083c
+Author: mariusbaican <marius3342@gmail.com>
+Date:   Mon Nov 11 21:48:58 2024 +0200
+
+    Cleanup
+
+commit aaa862ce8a13c1415a78979f7468b44a8514b50d
+Author: mariusbaican <155394478+mariusbaican@users.noreply.github.com>
+Date:   Fri Nov 8 19:51:59 2024 +0200
+
+    Followed homework guidelines, added comments
+
+commit b4b460b52d3ab01d8b7917dc34eb11bfb605317d
+Author: mariusbaican <155394478+mariusbaican@users.noreply.github.com>
+Date:   Fri Nov 8 18:36:01 2024 +0200
+
+    Added Javadocs and fixed coding style
+
+commit fea5e855196c19366c821f7d6b37230f7ab4ab62
+Author: mariusbaican <155394478+mariusbaican@users.noreply.github.com>
+Date:   Thu Nov 7 11:41:36 2024 +0200
+
+    Finished implementation 🎉🎉🎉
+
+commit 63275cd201089577ccb6e8617739930e4bf532fc
+Author: mariusbaican <155394478+mariusbaican@users.noreply.github.com>
+Date:   Thu Nov 7 01:56:20 2024 +0200
+
+    Fixed bug from last commit
+    
+    Possible Issue regarding abilities not working properly
+
+commit 5209c960e4906fb36e4420e950341c833de0dd1f
+Author: mariusbaican <155394478+mariusbaican@users.noreply.github.com>
+Date:   Thu Nov 7 00:43:35 2024 +0200
+
+    Added Outputs
+    
+    There is a bug somewhere in the game handling that results in the input asking for a card that isn't there and thus throwing an error.
+
+commit 48bad6e07ace5fcfcdf7149e368514e8c60e497e
+Author: mariusbaican <155394478+mariusbaican@users.noreply.github.com>
+Date:   Tue Nov 5 11:45:02 2024 +0200
+
+    Fixed Player Index Bug
+
+commit 156c67cfd468c3073d02d114a940e787cd2791ad
+Author: mariusbaican <155394478+mariusbaican@users.noreply.github.com>
+Date:   Mon Nov 4 23:48:10 2024 +0200
+
+    Updated Checker and Fixed some reset issues
+
+commit 544e9d0187b50b989e7b8c2f60a972a8d3aabf86
+Author: mariusbaican <155394478+mariusbaican@users.noreply.github.com>
+Date:   Mon Nov 4 21:29:10 2024 +0200
+
+    Added game resets, Fixed player hand
+
+commit 4c9531f0bd4f55e2253a6b0f363cbde5e7eb9355
+Author: mariusbaican <155394478+mariusbaican@users.noreply.github.com>
+Date:   Sat Nov 2 20:05:20 2024 +0200
+
+    Fixed initial mana
+
+commit ae14203942a65832f67b630b5a2634dd7fd412a6
+Author: mariusbaican <155394478+mariusbaican@users.noreply.github.com>
+Date:   Sat Nov 2 19:18:05 2024 +0200
+
+    Fixed part of the game
+
+commit 87be5d5656bcf7b3f21487468ef9a42105e3f3d4
+Author: mariusbaican <marius3342@gmail.com>
+Date:   Sat Nov 2 18:29:27 2024 +0200
+
+    broke the game
+
+commit 1d240a1893b98cad7f18fc9347933f31d9f55440
+Author: mariusbaican <marius3342@gmail.com>
+Date:   Wed Oct 30 15:49:43 2024 +0200
+
+    Implemented input handling
+
+commit 8d9f3516f0629ea62bf9a606466712dc080eaded
+Author: mariusbaican <marius3342@gmail.com>
+Date:   Tue Oct 29 20:39:18 2024 +0200
+
+    Reworked base classes, began game handling
+
+commit e62b1b6bc3486c9f9f6124dc50014c05d4e4bc89
+Author: mariusbaican <marius3342@gmail.com>
+Date:   Fri Oct 25 23:11:32 2024 +0300
+
+    Implemented cards
