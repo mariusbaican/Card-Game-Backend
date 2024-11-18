@@ -1,5 +1,7 @@
 # GwentStone Lite
 
+This project was the first assignment in my Object-Oriented Programming class.
+
 ### Introduction
 
 My goal for this project was to create an **intuitive** and **easy to use** ecosystem.  
