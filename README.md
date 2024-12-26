@@ -1,4 +1,4 @@
-# GwentStone Lite
+# Card Game
 
 This project was the first assignment in my Object-Oriented Programming class.
 
